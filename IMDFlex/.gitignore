@@ -1,0 +1,29 @@
+# Xcode
+build/
+DerivedData/
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+*.xccheckout
+
+# Tuist
+Derived/
+graph.png
+.tuist-bin
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# mise
+.mise.toml
+.tool-versions
+
+# fastlane (추후 추가 예정)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
