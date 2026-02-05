@@ -2,8 +2,9 @@ import ProjectDescription
 
 public extension Project {
     
-    static func framework(
+    static func module(
         name: String,
+        product: Product = .framework,
         dependencies: [TargetDependency] = [],
         resources: ResourceFileElements? = nil,
         hasTests: Bool = true
@@ -12,7 +13,7 @@ public extension Project {
             .target(
                 name: name,
                 destinations: .iOS,
-                product: .framework,
+                product: product,
                 bundleId: "com.luminoux.imdflex.\(name.lowercased())",
                 deploymentTargets: .iOS("18.0"),
                 sources: ["Sources/**"],
@@ -38,23 +39,6 @@ public extension Project {
         return Project(
             name: name,
             targets: targets
-        )
-    }
-    
-    static func feature(
-        name: String,
-        additionalDependencies: [TargetDependency] = []
-    ) -> Project {
-        let baseDependencies: [TargetDependency] = [
-            .project(target: "Domain", path: "../../Core/Domain"),
-            .project(target: "Data", path: "../../Core/Data"),
-            .project(target: "MapEditor", path: "../../Core/MapEditor"),
-            .project(target: "DesignSystem", path: "../../Core/DesignSystem"),
-        ]
-        
-        return .framework(
-            name: name,
-            dependencies: baseDependencies + additionalDependencies
         )
     }
 }

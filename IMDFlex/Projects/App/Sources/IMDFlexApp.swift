@@ -1,16 +1,17 @@
 import SwiftUI
+import Domain
+import Data
+import Presentation
 
 @main
 struct IMDFlexApp: App {
+    private let projectRepository = ProjectRepository()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ProjectListView(
+                useCase: ProjectUseCase(repository: projectRepository)
+            )
         }
-    }
-}
-
-struct ContentView: View {
-    var body: some View {
-        Text("IMDFlex")
     }
 }
