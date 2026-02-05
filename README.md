@@ -5,44 +5,48 @@ Apple IMDF 스펙을 준수하는 실내 지도 생성기
 ## 📋 프로젝트 정보
 
 - **Bundle ID**: com.luminoux.imdflex
-- **Xcode 버전**: 16.1
-- **iOS 배포 타겟**: 18.0
+- **iOS 배포 타겟**: 18.0+
 - **Swift 버전**: 6.0
 
-## 🏗️ 모듈 구조
+## 🏗️ 아키텍처
 
-### Core 모듈 (4개)
-| 모듈 | 설명 | Bundle ID |
-|-----|------|-----------|
-| **Domain** | IMDF 도메인 모델, 비즈니스 로직 | `com.luminoux.imdflex.domain` |
-| **Data** | Repository, 파일 시스템, 데이터 관리 | `com.luminoux.imdflex.data` |
-| **MapEditor** | 맵 에디터 공유 컴포넌트 | `com.luminoux.imdflex.mapeditor` |
-| **DesignSystem** | UI 컴포넌트, 디자인 시스템 | `com.luminoux.imdflex.designsystem` |
+Clean Architecture 기반 5개 모듈 구조
 
-### Feature 모듈 (10개)
-| Feature | 설명 | Bundle ID |
-|---------|------|-----------|
-| **Venue** | 장소 전체 영역 관리 | `com.luminoux.imdflex.venuefeature` |
-| **Building** | 건물 관리 | `com.luminoux.imdflex.buildingfeature` |
-| **Footprint** | 건물 외곽선 관리 | `com.luminoux.imdflex.footprintfeature` |
-| **Level** | 층 관리 | `com.luminoux.imdflex.levelfeature` |
-| **Unit** | 공간(방, 복도) 관리 | `com.luminoux.imdflex.unitfeature` |
-| **Opening** | 출입구 관리 | `com.luminoux.imdflex.openingfeature` |
-| **Amenity** | 편의시설 관리 | `com.luminoux.imdflex.amenityfeature` |
-| **Occupant** | 입주자 관리 | `com.luminoux.imdflex.occupantfeature` |
-| **Address** | 주소 관리 | `com.luminoux.imdflex.addressfeature` |
-| **Project** | 프로젝트 관리 | `com.luminoux.imdflex.projectfeature` |
+```
+IMDFlex/
+├── App/                    # 앱 진입점
+│   └── Sources/
+│
+├── Presentation/           # UI 레이어
+│   ├── MapEditor/          # 지도 편집 화면
+│   └── ProjectList/        # 프로젝트 목록 화면
+│
+├── Domain/                 # 비즈니스 로직
+│   ├── Entities/           # IMDF 모델 (Venue, Building, Level...)
+│   └── UseCases/           # UseCase, Repository 프로토콜
+│
+├── Data/                   # 데이터 레이어
+│   ├── Repositories/       # Repository 구현체
+│   └── DataSources/        # 파일 I/O, JSON 파싱
+│
+└── DesignSystem/           # 공통 UI 컴포넌트
+```
 
-### Shared 모듈 (2개)
-| 모듈 | 설명 | Bundle ID |
-|-----|------|-----------|
-| **Extensions** | Swift/SwiftUI Extensions | `com.luminoux.imdflex.extensions` |
-| **Utils** | 공통 유틸리티 함수 | `com.luminoux.imdflex.utils` |
+## 📦 의존성 구조
+
+```
+App
+├── Presentation (→ Domain, DesignSystem)
+├── Domain
+├── Data (→ Domain)
+└── DesignSystem
+```
 
 ## 🚀 시작하기
 
 ### 프로젝트 생성
 ```bash
+cd IMDFlex
 tuist generate
 ```
 
@@ -56,49 +60,33 @@ open IMDFlex.xcworkspace
 tuist build
 ```
 
-## 📦 의존성 구조
-
-```
-App
-├── Core
-│   ├── Domain
-│   ├── Data (→ Domain)
-│   ├── MapEditor (→ Domain, DesignSystem)
-│   └── DesignSystem
-├── Features (→ 모든 Core 모듈)
-│   ├── Venue
-│   ├── Building
-│   ├── Footprint
-│   ├── Level
-│   ├── Unit
-│   ├── Opening
-│   ├── Amenity
-│   ├── Occupant
-│   ├── Address
-│   └── Project
-└── Shared
-    ├── Extensions
-    └── Utils
-```
-
 ## 🛠️ 개발 가이드
 
-### 새 모듈 추가
-1. `Projects/` 아래 디렉토리 생성
-2. `Project.swift` 파일 작성
-3. `Workspace.swift`에 경로 추가
-4. `tuist generate` 실행
+### IMDF 엔티티
+
+Domain 모듈에 정의된 주요 모델:
+
+| 엔티티 | 설명 |
+|--------|------|
+| `Venue` | 실내 지도의 최상위 컨테이너 |
+| `Building` | 건물 |
+| `Level` | 층 |
+| `Unit` | 공간 (방, 복도 등) |
+| `Opening` | 출입구 |
+| `Amenity` | 편의시설 |
+| `Occupant` | 입주자 |
 
 ### 테스트
+
 ```bash
 # 전체 테스트
 tuist test
 
 # 특정 모듈 테스트
 tuist test Domain
-tuist test VenueFeature
+tuist test Data
 ```
 
 ## 📄 라이선스
 
-Copyright © 2025 Luminoux. All rights reserved.
+Copyright © 2026 Luminoux. All rights reserved.
