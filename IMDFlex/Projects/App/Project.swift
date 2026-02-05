@@ -34,5 +34,6 @@ let project = Project(
                 .target(name: "IMDFlex"),
             ]
         )
-    ]
+    ],
+    additionalFiles: ["README.md"]
 )

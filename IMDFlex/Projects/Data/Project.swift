@@ -5,5 +5,6 @@ let project = Project.module(
     name: "Data",
     dependencies: [
         .project(target: "Domain", path: "../Domain"),
-    ]
+    ],
+    additionalFiles: ["README.md"]
 )

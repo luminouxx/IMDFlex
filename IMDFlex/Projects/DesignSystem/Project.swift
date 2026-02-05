@@ -3,5 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.module(
     name: "DesignSystem",
-    dependencies: []
+    dependencies: [],
+    additionalFiles: ["README.md"]
 )

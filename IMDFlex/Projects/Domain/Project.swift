@@ -3,5 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.module(
     name: "Domain",
-    dependencies: []
+    dependencies: [],
+    additionalFiles: ["README.md"]
 )

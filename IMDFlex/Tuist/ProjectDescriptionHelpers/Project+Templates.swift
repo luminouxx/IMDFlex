@@ -6,6 +6,7 @@ public extension Project {
         name: String,
         product: Product = .framework,
         dependencies: [TargetDependency] = [],
+        additionalFiles: [FileElement] = [],
         resources: ResourceFileElements? = nil,
         hasTests: Bool = true
     ) -> Project {
@@ -38,7 +39,8 @@ public extension Project {
         
         return Project(
             name: name,
-            targets: targets
+            targets: targets,
+            additionalFiles: additionalFiles
         )
     }
 }

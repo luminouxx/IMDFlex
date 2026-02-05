@@ -6,5 +6,6 @@ let project = Project.module(
     dependencies: [
         .project(target: "Domain", path: "../Domain"),
         .project(target: "DesignSystem", path: "../DesignSystem"),
-    ]
+    ],
+    additionalFiles: ["README.md"]
 )
