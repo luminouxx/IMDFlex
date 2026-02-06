@@ -2,7 +2,6 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.module(
-    name: "DesignSystem",
-    dependencies: [],
-    additionalFiles: ["README.md"]
+    module: .designSystem,
+    dependencies: []
 )

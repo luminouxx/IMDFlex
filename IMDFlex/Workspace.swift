@@ -1,12 +1,7 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let workspace = Workspace(
-    name: "IMDFlex",
-    projects: [
-        "Projects/App",
-        "Projects/Presentation",
-        "Projects/Domain",
-        "Projects/Data",
-        "Projects/DesignSystem",
-    ]
+    name: AppConstants.appName,
+    projects: .allProjectPaths
 )
