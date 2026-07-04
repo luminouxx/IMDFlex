@@ -1,8 +1,8 @@
 ---
 name: Bug Report
 about: Report a bug
-title: '[Bug] '
-labels: bug
+title: 'fix: '
+labels: bug, fix
 assignees: ''
 ---
 
@@ -13,9 +13,13 @@ assignees: ''
 <!-- What should have happened? -->
 
 ## Steps to Reproduce
-1. 
-2. 
-3. 
+1. TODO
+2. TODO
+3. TODO
+
+## Acceptance Criteria
+- [ ] TODO
+- [ ] TODO
 
 ## Environment
 - iOS Version:

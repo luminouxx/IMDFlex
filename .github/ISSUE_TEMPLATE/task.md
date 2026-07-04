@@ -1,8 +1,8 @@
 ---
 name: Task
 about: Development task
-title: '[Task] '
-labels: task
+title: 'chore: '
+labels: chore
 assignees: ''
 ---
 
@@ -10,8 +10,8 @@ assignees: ''
 <!-- What needs to be done? -->
 
 ## Tasks
-- [ ] Task 1
-- [ ] Task 2
+- [ ] TODO
+- [ ] TODO
 
 ## Acceptance Criteria
 <!-- How do we know it's done? -->

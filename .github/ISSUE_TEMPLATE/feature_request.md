@@ -1,8 +1,8 @@
 ---
 name: Feature Request
 about: Suggest a new feature
-title: '[Feature] '
-labels: enhancement
+title: 'feat: '
+labels: feat
 assignees: ''
 ---
 
@@ -14,6 +14,14 @@ assignees: ''
 
 ## Proposed Solution
 <!-- How should it work? -->
+
+## Acceptance Criteria
+- [ ] TODO
+- [ ] TODO
+- [ ] TODO
+
+## IMDF Impact
+<!-- Schema, GeoJSON, category, relationship, export, or validator impact. Write "None" if not applicable. -->
 
 ## Alternatives Considered
 <!-- Other approaches you've thought about -->
