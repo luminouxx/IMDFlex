@@ -10,7 +10,7 @@ public enum Module: String, CaseIterable {
     
     /// Return Absolute Path (for Workspace.swift)
     public var absolutePath: Path {
-        "Project/\(name)"
+        "Projects/\(name)"
     }
     
     /// Return Relative Path
