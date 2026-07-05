@@ -68,14 +68,17 @@ private struct IMDFArchiveBuilder {
     }
 
     private func venueFeature() -> [String: Any] {
-        feature(
+        let coordinates = venueBoundaryCoordinates()
+
+        return feature(
             id: venue.id,
             featureType: "venue",
-            geometry: NSNull(),
+            geometry: polygonGeometry(coordinates),
             properties: compact([
                 "name": localized(venue.name),
                 "category": venue.category.rawValue,
-                "address_id": venue.address?.id.uuidString
+                "address_id": venue.address?.id.uuidString,
+                "display_point": displayPoint(for: coordinates)
             ])
         )
     }
@@ -87,8 +90,10 @@ private struct IMDFArchiveBuilder {
                 featureType: "building",
                 geometry: NSNull(),
                 properties: compact([
+                    "category": building.category.rawValue,
                     "name": localized(building.name),
-                    "venue_id": venue.id.uuidString
+                    "venue_id": venue.id.uuidString,
+                    "display_point": displayPoint(for: building.footprint?.coordinates ?? [])
                 ])
             )
         }
@@ -103,6 +108,7 @@ private struct IMDFArchiveBuilder {
                 featureType: "footprint",
                 geometry: polygonGeometry(footprint.coordinates),
                 properties: compact([
+                    "category": footprint.category.rawValue,
                     "building_id": building.id.uuidString
                 ])
             )
@@ -112,15 +118,19 @@ private struct IMDFArchiveBuilder {
     private func levelFeatures() -> [[String: Any]] {
         venue.buildings.flatMap { building in
             building.levels.map { level in
-                feature(
+                let coordinates = levelBoundaryCoordinates(for: level, building: building)
+
+                return feature(
                     id: level.id,
                     featureType: "level",
-                    geometry: NSNull(),
+                    geometry: polygonGeometry(coordinates),
                     properties: compact([
+                        "category": level.category.rawValue,
                         "name": localized(level.name),
                         "short_name": localized(level.shortName),
                         "ordinal": level.ordinal,
-                        "building_id": building.id.uuidString
+                        "building_id": building.id.uuidString,
+                        "display_point": displayPoint(for: coordinates)
                     ])
                 )
             }
@@ -262,6 +272,46 @@ private struct IMDFArchiveBuilder {
         return [
             "type": "Point",
             "coordinates": [longitude, latitude]
+        ]
+    }
+
+    private func venueBoundaryCoordinates() -> [Coordinate] {
+        if !venue.coordinates.isEmpty {
+            return venue.coordinates
+        }
+
+        let footprintCoordinates = venue.buildings.compactMap(\.footprint).flatMap(\.coordinates)
+        return enclosingRing(for: footprintCoordinates)
+    }
+
+    private func levelBoundaryCoordinates(for level: Level, building: Building) -> [Coordinate] {
+        if !level.coordinates.isEmpty {
+            return level.coordinates
+        }
+
+        return building.footprint?.coordinates ?? []
+    }
+
+    private func enclosingRing(for coordinates: [Coordinate]) -> [Coordinate] {
+        guard let first = coordinates.first else { return [] }
+
+        var minLatitude = first.latitude
+        var maxLatitude = first.latitude
+        var minLongitude = first.longitude
+        var maxLongitude = first.longitude
+
+        for coordinate in coordinates.dropFirst() {
+            minLatitude = min(minLatitude, coordinate.latitude)
+            maxLatitude = max(maxLatitude, coordinate.latitude)
+            minLongitude = min(minLongitude, coordinate.longitude)
+            maxLongitude = max(maxLongitude, coordinate.longitude)
+        }
+
+        return [
+            Coordinate(latitude: minLatitude, longitude: minLongitude),
+            Coordinate(latitude: minLatitude, longitude: maxLongitude),
+            Coordinate(latitude: maxLatitude, longitude: maxLongitude),
+            Coordinate(latitude: maxLatitude, longitude: minLongitude)
         ]
     }
 

@@ -13,22 +13,21 @@ This document tracks gaps between IMDFlex's current Domain/export model and Appl
 
 ## Highest-Risk Gaps
 
-### 1. Manifest Export Is Missing
+### 1. Manifest Export Is Present, Validator Confirmation Pending
 
 Apple validation includes:
 
 - `ManifestFileMustBePresent`
 - `ManifestVersionMustBeValid`
 
-Current `IMDFExporter` writes only GeoJSON feature collection files. It does not write `manifest.json`.
+Current `IMDFExporter` writes `manifest.json` with IMDF version `1.0.0`.
 
-Required direction:
+Remaining direction:
 
-- Add a manifest export file.
-- Declare the IMDF version expected by Apple resources.
-- Add tests that exported ZIP archives contain `manifest.json`.
+- Keep tests that exported ZIP archives contain `manifest.json`.
+- Confirm the generated archive in Apple IMDF Sandbox before claiming official submission readiness.
 
-### 2. Venue Geometry Is Wrong For Submission
+### 2. Venue Geometry Needs Apple Sandbox Confirmation
 
 Apple validation includes:
 
@@ -38,15 +37,15 @@ Apple validation includes:
 - `VenueMustHaveAddress`
 - `VenueMustHaveAtLeastOneBuilding`
 
-Current exporter emits `venue.geojson` with `geometry: null`.
+Current exporter emits polygonal `venue.geojson` geometry. The Domain model supports explicit venue coordinates, and the exporter falls back to an enclosing polygon derived from building footprints for legacy/project bootstrap data.
 
-Required direction:
+Remaining direction:
 
-- Add polygon geometry to the Domain `Venue` model or derive it from footprint/level coverage.
-- Add `display_point`.
+- Validate fallback-derived venue geometry in Apple IMDF Sandbox.
+- Add preflight issues for missing venue coordinates, missing address, and missing buildings.
 - Keep `address_id` and building coverage relationships valid.
 
-### 3. Level Geometry And Category Are Missing
+### 3. Level Geometry And Category Are Present, Coverage Rules Pending
 
 Apple validation includes:
 
@@ -57,16 +56,15 @@ Apple validation includes:
 - `LevelMustHaveOrdinal`
 - `LevelMustBeReferencedByUnit`
 
-Current `Level` has `name`, `ordinal`, and optional `shortName`, but no geometry or category.
+Current `Level` has `name`, `ordinal`, optional `shortName`, `category`, and polygon coordinates. The exporter falls back to the building footprint when level coordinates are not explicitly provided.
 
-Required direction:
+Remaining direction:
 
-- Add `LevelCategory`.
-- Add level polygon geometry.
 - Make `shortName` required before export or enforce it in preflight.
 - Ensure every exported level is referenced by at least one unit.
+- Validate level/footprint coverage behavior in Apple IMDF Sandbox.
 
-### 4. Building And Footprint Categories Are Missing
+### 4. Building And Footprint Categories Are Present, Relationship Preflight Pending
 
 Apple validation includes:
 
@@ -77,13 +75,12 @@ Apple validation includes:
 - `FootprintMustHavePolygonalGeometry`
 - `FootprintMustReferenceBuilding`
 
-Current `Building` has no category. Current `Footprint` has no category.
+Current `Building` has an Apple category value. Current `Footprint` has an Apple category value and polygon geometry.
 
-Required direction:
+Remaining direction:
 
-- Add `BuildingCategory` with Apple values.
-- Add `FootprintCategory` with Apple values.
 - Keep footprint-to-building references explicit in exporter and preflight validation.
+- Add preflight issues for buildings without footprints and footprints without valid polygon geometry.
 
 ### 5. Category Raw Values Do Not Match Apple IMDF
 
@@ -165,9 +162,9 @@ Use Apple category values as raw export values.
 
 ## Recommended Implementation Order
 
-1. Add `manifest.json` export and tests.
-2. Add explicit geometry/category fields for `Venue`, `Building`, `Footprint`, and `Level`.
-3. Align MVP category enums with Apple category CSV raw values.
+1. Add `manifest.json` export and tests. Done locally; Apple Sandbox confirmation pending.
+2. Add explicit geometry/category fields for `Venue`, `Building`, `Footprint`, and `Level`. Done locally; Apple Sandbox confirmation pending.
+3. Align remaining MVP category enums with Apple category CSV raw values.
 4. Add a preflight validator for required relationships and required geometry.
 5. Decide `Occupant + Anchor` scope before exporting occupants as Apple-submission data.
 6. Add module tests:
