@@ -13,17 +13,21 @@ final class DomainModelTests: XCTestCase {
         let level = Level(
             id: try uuid("00000000-0000-0000-0000-000000000002"),
             name: "Level 1",
+            category: .unspecified,
             ordinal: 0,
             shortName: "1F",
+            coordinates: squareCoordinates(),
             units: [unit]
         )
         let footprint = Footprint(
             id: try uuid("00000000-0000-0000-0000-000000000003"),
+            category: .ground,
             coordinates: squareCoordinates()
         )
         let building = Building(
             id: try uuid("00000000-0000-0000-0000-000000000004"),
             name: "Main Building",
+            category: .unspecified,
             levels: [level],
             footprint: footprint
         )
@@ -39,14 +43,20 @@ final class DomainModelTests: XCTestCase {
             id: try uuid("00000000-0000-0000-0000-000000000006"),
             name: "IMDFlex Test Venue",
             category: .university,
+            coordinates: squareCoordinates(),
             buildings: [building],
             address: address
         )
 
+        XCTAssertEqual(venue.coordinates, squareCoordinates())
         XCTAssertEqual(venue.buildings.first?.id, building.id)
+        XCTAssertEqual(venue.buildings.first?.category, .unspecified)
         XCTAssertEqual(venue.buildings.first?.levels.first?.id, level.id)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.category, .unspecified)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.coordinates, squareCoordinates())
         XCTAssertEqual(venue.buildings.first?.levels.first?.units.first?.id, unit.id)
         XCTAssertEqual(venue.buildings.first?.footprint?.id, footprint.id)
+        XCTAssertEqual(venue.buildings.first?.footprint?.category, .ground)
         XCTAssertEqual(venue.address?.id, address.id)
     }
 
