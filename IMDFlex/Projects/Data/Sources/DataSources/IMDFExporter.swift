@@ -17,6 +17,7 @@ private struct IMDFArchiveBuilder {
     func makeFiles() throws -> [String: Data] {
         var files: [String: Data] = [:]
 
+        files["manifest.json"] = try encode(manifest())
         files["address.geojson"] = try encode(collection(addressFeatures()))
         files["venue.geojson"] = try encode(collection([venueFeature()]))
         files["building.geojson"] = try encode(collection(buildingFeatures()))
@@ -28,6 +29,12 @@ private struct IMDFArchiveBuilder {
         files["occupant.geojson"] = try encode(collection(occupantFeatures()))
 
         return files
+    }
+
+    private func manifest() -> [String: Any] {
+        [
+            "version": "1.0.0"
+        ]
     }
 
     private func collection(_ features: [[String: Any]]) -> [String: Any] {
