@@ -106,6 +106,11 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
 ## Testing And Verification
 
 - Implement features in a testable way.
+- Follow `docs/testing-strategy.md` for test naming, Given-When-Then structure, `makeSUT()` usage, test double naming, async testing, and layer-specific strategy.
+- Use the `imdflex-test-author` skill when writing or refactoring tests.
+- Prefer XCTest for now unless an explicit Swift Testing migration decision is made.
+- Name tests with `test_whenCondition_thenExpectedBehavior`.
+- Structure test bodies with `// Given`, `// When`, and `// Then` sections separated by blank lines.
 - Add focused unit tests for domain logic, serializers, exporters, validators, and geometry behavior.
 - Prefer unit tests over UI tests unless UI tests are the only practical coverage.
 - When changing Tuist configuration, run:

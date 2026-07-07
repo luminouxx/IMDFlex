@@ -3,36 +3,40 @@ import XCTest
 @testable import Domain
 
 final class ProjectUseCaseTests: XCTestCase {
-    func testCreateProjectSavesProjectThroughRepositoryProtocol() async throws {
-        let repository = InMemoryProjectRepository()
-        let useCase = ProjectUseCase(repository: repository)
+    func test_whenProjectIsCreated_thenItIsSavedThroughRepositoryProtocol() async throws {
+        // Given
+        let (sut, repository) = makeSUT()
 
-        let project = try await useCase.createProject(name: "Indoor Mapping")
+        // When
+        let project = try await sut.createProject(name: "Indoor Mapping")
         let savedProject = try await repository.fetch(id: project.id)
 
+        // Then
         XCTAssertEqual(savedProject?.id, project.id)
         XCTAssertEqual(savedProject?.name, "Indoor Mapping")
         XCTAssertNil(savedProject?.venue)
     }
 
-    func testLoadProjectsReturnsRepositoryProjects() async throws {
-        let repository = InMemoryProjectRepository()
-        let useCase = ProjectUseCase(repository: repository)
+    func test_whenProjectsAreLoaded_thenRepositoryProjectsAreReturned() async throws {
+        // Given
+        let (sut, repository) = makeSUT()
         let firstProject = IMDFProject(name: "First Project")
         let secondProject = IMDFProject(name: "Second Project")
 
         try await repository.save(firstProject)
         try await repository.save(secondProject)
 
-        let projects = try await useCase.loadProjects()
+        // When
+        let projects = try await sut.loadProjects()
         let projectIDs = Set(projects.map(\.id))
 
+        // Then
         XCTAssertEqual(projectIDs, [firstProject.id, secondProject.id])
     }
 
-    func testUpdateProjectRefreshesUpdatedAtAndPreservesProjectContent() async throws {
-        let repository = InMemoryProjectRepository()
-        let useCase = ProjectUseCase(repository: repository)
+    func test_whenProjectIsUpdated_thenUpdatedAtIsRefreshedAndContentIsPreserved() async throws {
+        // Given
+        let (sut, repository) = makeSUT()
         let createdAt = Date(timeIntervalSince1970: 100)
         let oldUpdatedAt = Date(timeIntervalSince1970: 200)
         let venue = Venue(name: "Venue", category: .university)
@@ -43,8 +47,10 @@ final class ProjectUseCaseTests: XCTestCase {
             updatedAt: oldUpdatedAt
         )
 
-        try await useCase.updateProject(project)
+        // When
+        try await sut.updateProject(project)
 
+        // Then
         let fetchedProject = try await repository.fetch(id: project.id)
         let updatedProject = try XCTUnwrap(fetchedProject)
         XCTAssertEqual(updatedProject.id, project.id)
@@ -54,20 +60,29 @@ final class ProjectUseCaseTests: XCTestCase {
         XCTAssertGreaterThan(updatedProject.updatedAt, oldUpdatedAt)
     }
 
-    func testDeleteProjectRemovesProjectThroughRepositoryProtocol() async throws {
-        let repository = InMemoryProjectRepository()
-        let useCase = ProjectUseCase(repository: repository)
+    func test_whenProjectIsDeleted_thenItIsRemovedThroughRepositoryProtocol() async throws {
+        // Given
+        let (sut, repository) = makeSUT()
         let project = IMDFProject(name: "Project To Delete")
-
         try await repository.save(project)
-        try await useCase.deleteProject(id: project.id)
 
+        // When
+        try await sut.deleteProject(id: project.id)
         let deletedProject = try await repository.fetch(id: project.id)
+
+        // Then
         XCTAssertNil(deletedProject)
+    }
+
+    private func makeSUT() -> (sut: ProjectUseCase, repository: InMemoryProjectRepositoryFake) {
+        let repository = InMemoryProjectRepositoryFake()
+        let sut = ProjectUseCase(repository: repository)
+
+        return (sut, repository)
     }
 }
 
-private actor InMemoryProjectRepository: ProjectRepositoryProtocol {
+private actor InMemoryProjectRepositoryFake: ProjectRepositoryProtocol {
     private var projects: [UUID: IMDFProject] = [:]
 
     func fetchAll() async throws -> [IMDFProject] {

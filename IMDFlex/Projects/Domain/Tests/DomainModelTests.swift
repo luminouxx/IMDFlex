@@ -3,12 +3,14 @@ import XCTest
 @testable import Domain
 
 final class DomainModelTests: XCTestCase {
-    func testVenuePreservesNestedIMDFEntityRelationships() throws {
+    func test_whenVenueIsCreatedWithNestedEntities_thenItPreservesIMDFRelationships() throws {
+        // Given
+        let coordinates = squareCoordinates()
         let unit = Unit(
             id: try uuid("00000000-0000-0000-0000-000000000001"),
             name: "Lobby",
             category: .lobby,
-            coordinates: squareCoordinates()
+            coordinates: coordinates
         )
         let level = Level(
             id: try uuid("00000000-0000-0000-0000-000000000002"),
@@ -16,13 +18,13 @@ final class DomainModelTests: XCTestCase {
             category: .unspecified,
             ordinal: 0,
             shortName: "1F",
-            coordinates: squareCoordinates(),
+            coordinates: coordinates,
             units: [unit]
         )
         let footprint = Footprint(
             id: try uuid("00000000-0000-0000-0000-000000000003"),
             category: .ground,
-            coordinates: squareCoordinates()
+            coordinates: coordinates
         )
         let building = Building(
             id: try uuid("00000000-0000-0000-0000-000000000004"),
@@ -39,42 +41,75 @@ final class DomainModelTests: XCTestCase {
             country: "US",
             postalCode: "95014"
         )
+
+        // When
         let venue = Venue(
             id: try uuid("00000000-0000-0000-0000-000000000006"),
             name: "IMDFlex Test Venue",
             category: .university,
-            coordinates: squareCoordinates(),
+            coordinates: coordinates,
             buildings: [building],
             address: address
         )
 
-        XCTAssertEqual(venue.coordinates, squareCoordinates())
+        // Then
+        XCTAssertEqual(venue.coordinates, coordinates)
         XCTAssertEqual(venue.buildings.first?.id, building.id)
         XCTAssertEqual(venue.buildings.first?.category, .unspecified)
         XCTAssertEqual(venue.buildings.first?.levels.first?.id, level.id)
         XCTAssertEqual(venue.buildings.first?.levels.first?.category, .unspecified)
-        XCTAssertEqual(venue.buildings.first?.levels.first?.coordinates, squareCoordinates())
+        XCTAssertEqual(venue.buildings.first?.levels.first?.coordinates, coordinates)
         XCTAssertEqual(venue.buildings.first?.levels.first?.units.first?.id, unit.id)
         XCTAssertEqual(venue.buildings.first?.footprint?.id, footprint.id)
         XCTAssertEqual(venue.buildings.first?.footprint?.category, .ground)
         XCTAssertEqual(venue.address?.id, address.id)
     }
 
-    func testCoordinateEqualityUsesLatitudeAndLongitude() {
+    func test_whenCoordinatesShareLatitudeAndLongitude_thenTheyAreEqual() {
+        // Given
         let coordinate = Coordinate(latitude: 37.33182, longitude: -122.03118)
 
-        XCTAssertEqual(coordinate, Coordinate(latitude: 37.33182, longitude: -122.03118))
-        XCTAssertNotEqual(coordinate, Coordinate(latitude: 37.33182, longitude: -122.03119))
-        XCTAssertNotEqual(coordinate, Coordinate(latitude: 37.33183, longitude: -122.03118))
+        // When
+        let equalCoordinate = Coordinate(latitude: 37.33182, longitude: -122.03118)
+        let differentLongitude = Coordinate(latitude: 37.33182, longitude: -122.03119)
+        let differentLatitude = Coordinate(latitude: 37.33183, longitude: -122.03118)
+
+        // Then
+        XCTAssertEqual(coordinate, equalCoordinate)
+        XCTAssertNotEqual(coordinate, differentLongitude)
+        XCTAssertNotEqual(coordinate, differentLatitude)
     }
 
-    func testFootprintPreservesAuthoredPolygonCoordinates() {
+    func test_whenFootprintIsCreatedWithPolygonCoordinates_thenItPreservesAuthoredCoordinates() {
+        // Given
         let coordinates = squareCoordinates()
+
+        // When
         let footprint = Footprint(coordinates: coordinates)
 
+        // Then
         XCTAssertEqual(footprint.coordinates, coordinates)
         XCTAssertEqual(footprint.coordinates.count, 4)
         XCTAssertNotEqual(footprint.coordinates.first, footprint.coordinates.last)
+    }
+
+    func test_whenCoreCategoriesAreUsed_thenRawValuesMatchAppleIMDFCategories() {
+        // Given
+        let venueCategory = VenueCategory.shoppingCenter
+        let buildingCategory = BuildingCategory.unspecified
+        let footprintCategory = FootprintCategory.ground
+        let levelCategory = LevelCategory.unspecified
+
+        // When
+        let rawValues = [
+            venueCategory.rawValue,
+            buildingCategory.rawValue,
+            footprintCategory.rawValue,
+            levelCategory.rawValue
+        ]
+
+        // Then
+        XCTAssertEqual(rawValues, ["shoppingcenter", "unspecified", "ground", "unspecified"])
     }
 
     private func uuid(_ string: String) throws -> UUID {
