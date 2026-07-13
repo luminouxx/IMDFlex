@@ -69,5 +69,7 @@ This scope should be committed in reviewable layers:
 - Full polygon containment and coverage validation.
 - Self-intersection detection beyond Apple Validator.
 - Complete category lists for `amenity` and `occupant`.
+- Official confirmation of `relationship.direction` accepted values.
+- Official confirmation of `relationship` endpoint property names.
 - Rich editor UX for every feature.
 - Apple IMDF Sandbox automation.
