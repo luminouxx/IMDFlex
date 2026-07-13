@@ -82,23 +82,25 @@ Remaining direction:
 - Keep footprint-to-building references explicit in exporter and preflight validation.
 - Add preflight issues for buildings without footprints and footprints without valid polygon geometry.
 
-### 5. Category Raw Values Do Not Match Apple IMDF
+### 5. Remaining Category Coverage Needs Apple IMDF Review
 
-Several current enums use app-friendly or snake_case values that are not Apple IMDF raw values.
+MVP category enum raw values are being aligned to Apple IMDF values. Core categories and curated MVP presets for `Unit`, `Opening`, `AccessControl`, `Amenity`, and `Occupant` now use Apple category CSV values where represented.
 
-Examples:
+Resolved examples:
 
-- `VenueCategory.shoppingCenter` currently exports `shopping_center`; Apple category is `shoppingcenter`.
-- `VenueCategory.parkingFacility` currently exports `parking_facility`; Apple category is `parkingfacility`.
-- `UnitCategory.foodService` currently exports `food_service`; Apple category is `foodservice`.
-- `OpeningCategory.emergencyExit` currently exports `emergency_exit`; Apple category is `emergencyexit`.
-- `AccessControl.keyCard` currently exports `key_card`; Apple category list uses values such as `keyaccess`, `badgereader`, and `passwordaccess`.
+- `VenueCategory.shoppingCenter` exports `shoppingcenter`.
+- `VenueCategory.parkingFacility` exports `parkingfacility`.
+- `UnitCategory.foodService` exports `foodservice`.
+- `OpeningCategory.emergencyExit` exports `emergencyexit`.
+- `AccessControl.keyAccess` exports `keyaccess`.
+- Amenity presets use Apple compact/dot values such as `restroom.male`, `drinkingfountain`, `powerchargingstation`, and `firstaid`.
+- Occupant presets map to Apple category values such as `shopping`, `corporateoffices`, `medicalcenter`, `publicservices.government`, `arts.entertainment`, and `localservices`.
 
-Required direction:
+Remaining direction:
 
-- Replace or remap enum raw values to Apple CSV values.
-- Consider keeping user-facing labels separate from IMDF raw values.
-- Add tests asserting exported raw values match Apple categories.
+- Decide whether full Apple category lists should be modeled as enums, raw strings, or curated presets.
+- Add UI-facing labels separate from IMDF raw values.
+- Continue adding tests when new category presets are introduced.
 
 ### 6. Occupant Requires Anchor
 
@@ -164,7 +166,7 @@ Use Apple category values as raw export values.
 
 1. Add `manifest.json` export and tests. Done locally; Apple Sandbox confirmation pending.
 2. Add explicit geometry/category fields for `Venue`, `Building`, `Footprint`, and `Level`. Done locally; Apple Sandbox confirmation pending.
-3. Align remaining MVP category enums with Apple category CSV raw values.
+3. Align remaining MVP category enums with Apple category CSV raw values. Curated MVP presets are aligned locally; full category strategy remains open.
 4. Add a preflight validator for required relationships and required geometry. Started locally with model-level required data checks.
 5. Decide `Occupant + Anchor` scope before exporting occupants as Apple-submission data.
 6. Add module tests:

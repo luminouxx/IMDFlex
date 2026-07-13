@@ -26,14 +26,14 @@ public enum AmenityCategory: String, Codable, CaseIterable, Sendable {
     case escalator
     case stairs
     case restroom
-    case restroomMale = "restroom_male"
-    case restroomFemale = "restroom_female"
-    case restroomUnisex = "restroom_unisex"
-    case drinkingWater = "drinking_water"
+    case restroomMale = "restroom.male"
+    case restroomFemale = "restroom.female"
+    case restroomUnisex = "restroom.unisex"
+    case drinkingWater = "drinkingfountain"
     case information
-    case ticketMachine = "ticket_machine"
+    case ticketMachine = "ticketing"
     case parking
-    case chargingStation = "charging_station"
-    case firstAid = "first_aid"
-    case other
+    case chargingStation = "powerchargingstation"
+    case firstAid = "firstaid"
+    case unspecified
 }

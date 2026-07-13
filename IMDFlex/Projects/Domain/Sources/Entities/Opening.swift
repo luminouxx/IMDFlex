@@ -21,19 +21,22 @@ public struct Opening: Identifiable, Codable, Sendable {
 }
 
 public enum OpeningCategory: String, Codable, CaseIterable, Sendable {
-    case door
-    case emergencyDoor = "emergency_door"
-    case gate
-    case entrance
-    case exit
-    case emergencyExit = "emergency_exit"
-    case other
+    case automobile
+    case bicycle
+    case emergencyExit = "emergencyexit"
+    case pedestrian
+    case principalPedestrian = "pedestrian.principal"
+    case transitPedestrian = "pedestrian.transit"
+    case service
 }
 
 public enum AccessControl: String, Codable, CaseIterable, Sendable {
-    case open
-    case restricted
-    case locked
-    case keyCard = "key_card"
-    case biometric
+    case badgeReader = "badgereader"
+    case fingerprintReader = "fingerprintreader"
+    case guarded = "guard"
+    case keyAccess = "keyaccess"
+    case outOfService = "outofservice"
+    case passwordAccess = "passwordaccess"
+    case retinaScanner = "retinascanner"
+    case voiceRecognition = "voicerecognition"
 }
