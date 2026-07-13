@@ -27,15 +27,14 @@ public struct Occupant: Identifiable, Codable, Sendable {
 }
 
 public enum OccupantCategory: String, Codable, CaseIterable, Sendable {
-    case retail
+    case retail = "shopping"
     case restaurant
     case cafe
     case bank
-    case office
-    case medical
-    case government
+    case office = "corporateoffices"
+    case medical = "medicalcenter"
+    case government = "publicservices.government"
     case education
-    case entertainment
-    case service
-    case other
+    case entertainment = "arts.entertainment"
+    case service = "localservices"
 }

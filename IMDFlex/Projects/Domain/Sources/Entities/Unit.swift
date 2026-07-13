@@ -28,7 +28,7 @@ public struct Unit: Identifiable, Codable, Sendable {
 
 public enum UnitCategory: String, Codable, CaseIterable, Sendable {
     case room
-    case corridor
+    case walkway
     case lobby
     case restroom
     case stairs
@@ -36,9 +36,8 @@ public enum UnitCategory: String, Codable, CaseIterable, Sendable {
     case escalator
     case parking
     case office
-    case retail
-    case foodService = "food_service"
+    case foodService = "foodservice"
     case storage
-    case mechanical
-    case other
+    case structure
+    case unspecified
 }

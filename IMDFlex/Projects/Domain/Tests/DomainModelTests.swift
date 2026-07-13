@@ -93,23 +93,59 @@ final class DomainModelTests: XCTestCase {
         XCTAssertNotEqual(footprint.coordinates.first, footprint.coordinates.last)
     }
 
-    func test_whenCoreCategoriesAreUsed_thenRawValuesMatchAppleIMDFCategories() {
+    func test_whenMVPFeatureCategoriesAreUsed_thenRawValuesMatchAppleIMDFCategories() {
         // Given
-        let venueCategory = VenueCategory.shoppingCenter
-        let buildingCategory = BuildingCategory.unspecified
-        let footprintCategory = FootprintCategory.ground
-        let levelCategory = LevelCategory.unspecified
+        let categories: [String] = [
+            VenueCategory.shoppingCenter.rawValue,
+            BuildingCategory.unspecified.rawValue,
+            FootprintCategory.ground.rawValue,
+            LevelCategory.unspecified.rawValue,
+            UnitCategory.foodService.rawValue,
+            UnitCategory.walkway.rawValue,
+            UnitCategory.structure.rawValue,
+            OpeningCategory.emergencyExit.rawValue,
+            OpeningCategory.principalPedestrian.rawValue,
+            AccessControl.keyAccess.rawValue,
+            AccessControl.badgeReader.rawValue,
+            AmenityCategory.restroomMale.rawValue,
+            AmenityCategory.drinkingWater.rawValue,
+            AmenityCategory.chargingStation.rawValue,
+            AmenityCategory.firstAid.rawValue,
+            OccupantCategory.retail.rawValue,
+            OccupantCategory.office.rawValue,
+            OccupantCategory.medical.rawValue,
+            OccupantCategory.government.rawValue,
+            OccupantCategory.entertainment.rawValue,
+            OccupantCategory.service.rawValue
+        ]
 
         // When
-        let rawValues = [
-            venueCategory.rawValue,
-            buildingCategory.rawValue,
-            footprintCategory.rawValue,
-            levelCategory.rawValue
+        let expectedAppleCategoryValues = [
+            "shoppingcenter",
+            "unspecified",
+            "ground",
+            "unspecified",
+            "foodservice",
+            "walkway",
+            "structure",
+            "emergencyexit",
+            "pedestrian.principal",
+            "keyaccess",
+            "badgereader",
+            "restroom.male",
+            "drinkingfountain",
+            "powerchargingstation",
+            "firstaid",
+            "shopping",
+            "corporateoffices",
+            "medicalcenter",
+            "publicservices.government",
+            "arts.entertainment",
+            "localservices"
         ]
 
         // Then
-        XCTAssertEqual(rawValues, ["shoppingcenter", "unspecified", "ground", "unspecified"])
+        XCTAssertEqual(categories, expectedAppleCategoryValues)
     }
 
     private func uuid(_ string: String) throws -> UUID {
