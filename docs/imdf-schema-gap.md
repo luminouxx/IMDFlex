@@ -165,13 +165,38 @@ Use Apple category values as raw export values.
 1. Add `manifest.json` export and tests. Done locally; Apple Sandbox confirmation pending.
 2. Add explicit geometry/category fields for `Venue`, `Building`, `Footprint`, and `Level`. Done locally; Apple Sandbox confirmation pending.
 3. Align remaining MVP category enums with Apple category CSV raw values.
-4. Add a preflight validator for required relationships and required geometry.
+4. Add a preflight validator for required relationships and required geometry. Started locally with model-level required data checks.
 5. Decide `Occupant + Anchor` scope before exporting occupants as Apple-submission data.
 6. Add module tests:
    - `Domain`: entity construction and category raw values.
    - `Data`: exported ZIP file list and GeoJSON structure.
    - `Data`: relationship references and coordinate order.
    - `Presentation`: later, editor tools should produce valid Domain geometry.
+
+## Local Preflight Scope
+
+`IMDFPreflightValidator` is a local authoring aid, not a replacement for Apple IMDF Sandbox or Apple IMDF Validator.
+
+The first local preflight pass checks model-level issues that can be detected without full GeoJSON topology:
+
+- Venue has explicit polygon coordinates.
+- Venue references an address.
+- Venue has at least one building.
+- Building has a footprint.
+- Footprint has enough coordinates to form a polygon.
+- Level has a short name.
+- Level has explicit polygon coordinates or a valid building footprint fallback.
+- Level has at least one unit.
+- Unit has enough coordinates to form a polygon.
+- Occupant has a category.
+- Occupant export is blocked until anchor support exists.
+
+The preflight validator intentionally does not yet prove:
+
+- Venue polygon covers all child features.
+- Display points are contained by their parent polygons.
+- Level/unit/footprint coverage is topologically correct.
+- Apple IMDF Sandbox acceptance.
 
 ## Open Questions
 
