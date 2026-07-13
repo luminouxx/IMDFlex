@@ -149,12 +149,16 @@ public struct IMDFPreflightValidator: IMDFPreflightValidating, Sendable {
             }
 
             for occupant in unit.occupants {
-                validateOccupant(occupant, issues: &issues)
+                validateOccupant(occupant, anchors: unit.anchors, issues: &issues)
             }
         }
     }
 
-    private func validateOccupant(_ occupant: Occupant, issues: inout [IMDFPreflightIssue]) {
+    private func validateOccupant(
+        _ occupant: Occupant,
+        anchors: [Anchor],
+        issues: inout [IMDFPreflightIssue]
+    ) {
         if occupant.category == nil {
             issues.append(
                 .init(
@@ -167,15 +171,30 @@ public struct IMDFPreflightValidator: IMDFPreflightValidating, Sendable {
             )
         }
 
-        issues.append(
-            .init(
-                code: .occupantAnchorUnsupported,
-                severity: .error,
-                feature: .occupant,
-                featureID: occupant.id,
-                message: "Occupant export requires anchor support, which is not implemented yet."
+        guard let anchorID = occupant.anchorID else {
+            issues.append(
+                .init(
+                    code: .occupantMissingAnchor,
+                    severity: .error,
+                    feature: .occupant,
+                    featureID: occupant.id,
+                    message: "Occupant must reference an anchor."
+                )
             )
-        )
+            return
+        }
+
+        if !anchors.contains(where: { $0.id == anchorID }) {
+            issues.append(
+                .init(
+                    code: .occupantAnchorNotFound,
+                    severity: .error,
+                    feature: .anchor,
+                    featureID: anchorID,
+                    message: "Occupant anchor reference must resolve to an anchor in the same unit."
+                )
+            )
+        }
     }
 
     private func isValidPolygon(_ coordinates: [Coordinate]) -> Bool {
@@ -232,7 +251,8 @@ public enum IMDFPreflightIssueCode: String, Codable, CaseIterable, Sendable {
     case levelMissingUnit
     case unitInvalidPolygon
     case occupantMissingCategory
-    case occupantAnchorUnsupported
+    case occupantMissingAnchor
+    case occupantAnchorNotFound
 }
 
 public enum IMDFPreflightSeverity: String, Codable, CaseIterable, Sendable {
@@ -246,5 +266,6 @@ public enum IMDFPreflightFeature: String, Codable, CaseIterable, Sendable {
     case footprint
     case level
     case unit
+    case anchor
     case occupant
 }

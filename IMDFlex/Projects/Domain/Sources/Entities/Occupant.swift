@@ -5,6 +5,7 @@ public struct Occupant: Identifiable, Codable, Sendable {
     public let id: UUID
     public var name: String
     public var category: OccupantCategory?
+    public var anchorID: UUID?
     public var phone: String?
     public var website: URL?
     public var hours: String?
@@ -13,6 +14,7 @@ public struct Occupant: Identifiable, Codable, Sendable {
         id: UUID = UUID(),
         name: String,
         category: OccupantCategory? = nil,
+        anchorID: UUID? = nil,
         phone: String? = nil,
         website: URL? = nil,
         hours: String? = nil
@@ -20,6 +22,7 @@ public struct Occupant: Identifiable, Codable, Sendable {
         self.id = id
         self.name = name
         self.category = category
+        self.anchorID = anchorID
         self.phone = phone
         self.website = website
         self.hours = hours

@@ -118,9 +118,41 @@ final class IMDFPreflightValidatorTests: XCTestCase {
         let issues = sut.validate(venue)
 
         // Then
-        XCTAssertEqual(issueCodes(in: issues), [.unitInvalidPolygon, .occupantMissingCategory, .occupantAnchorUnsupported])
+        XCTAssertEqual(issueCodes(in: issues), [.unitInvalidPolygon, .occupantMissingCategory, .occupantMissingAnchor])
         XCTAssertEqual(issues.map(\.feature), [.unit, .occupant, .occupant])
         XCTAssertTrue(issues.contains { $0.featureID == occupant.id })
+    }
+
+    func test_whenOccupantReferencesAnchorInSameUnit_thenValidatorReturnsNoOccupantAnchorIssue() {
+        // Given
+        let sut = makeSUT()
+        let anchor = Anchor(coordinate: Coordinate(latitude: 37.33180, longitude: -122.03100))
+        let occupant = Occupant(name: "Tenant", category: .retail, anchorID: anchor.id)
+        let unit = makeUnitFixture(anchors: [anchor], occupants: [occupant])
+        let venue = makeVenueFixture(buildings: [makeBuildingFixture(units: [unit])])
+
+        // When
+        let issues = sut.validate(venue)
+
+        // Then
+        XCTAssertFalse(issues.contains { $0.featureID == occupant.id })
+    }
+
+    func test_whenOccupantReferencesUnknownAnchor_thenValidatorReturnsAnchorReferenceIssue() {
+        // Given
+        let sut = makeSUT()
+        let anchorID = UUID()
+        let occupant = Occupant(name: "Tenant", category: .retail, anchorID: anchorID)
+        let unit = makeUnitFixture(occupants: [occupant])
+        let venue = makeVenueFixture(buildings: [makeBuildingFixture(units: [unit])])
+
+        // When
+        let issues = sut.validate(venue)
+
+        // Then
+        XCTAssertEqual(issueCodes(in: issues), [.occupantAnchorNotFound])
+        XCTAssertEqual(issues.first?.feature, .anchor)
+        XCTAssertEqual(issues.first?.featureID, anchorID)
     }
 
     func test_whenIssueIsCreated_thenIDIncludesCodeFeatureAndFeatureID() throws {
@@ -161,7 +193,7 @@ final class IMDFPreflightValidatorTests: XCTestCase {
         )
     }
 
-    private func makeBuildingFixture() -> Building {
+    private func makeBuildingFixture(units: [Domain.Unit]? = nil) -> Building {
         Building(
             name: "Main",
             levels: [
@@ -170,7 +202,7 @@ final class IMDFPreflightValidatorTests: XCTestCase {
                     ordinal: 0,
                     shortName: "1F",
                     coordinates: squareCoordinates(),
-                    units: [makeUnitFixture()]
+                    units: units ?? [makeUnitFixture()]
                 )
             ],
             footprint: makeFootprintFixture()
@@ -181,8 +213,17 @@ final class IMDFPreflightValidatorTests: XCTestCase {
         Footprint(coordinates: squareCoordinates())
     }
 
-    private func makeUnitFixture() -> Domain.Unit {
-        Domain.Unit(name: "Lobby", category: .lobby, coordinates: squareCoordinates())
+    private func makeUnitFixture(
+        anchors: [Anchor] = [],
+        occupants: [Occupant] = []
+    ) -> Domain.Unit {
+        Domain.Unit(
+            name: "Lobby",
+            category: .lobby,
+            coordinates: squareCoordinates(),
+            anchors: anchors,
+            occupants: occupants
+        )
     }
 
     private func squareCoordinates() -> [Coordinate] {

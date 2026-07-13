@@ -110,13 +110,13 @@ Apple validation includes:
 - `OccupantMustHaveCategory`
 - `OccupantMustHaveName`
 
-Current MVP scope includes `occupant` but not `anchor`. Current `Occupant` has no anchor reference, and current exporter writes `unit_id` instead.
+Current MVP scope includes `occupant` and now includes local `anchor` support. `Occupant` stores an optional `anchorID`, `Unit` owns anchors, and the exporter writes `anchor.geojson` plus `occupant.properties.anchor_id`.
 
-Required direction:
+Remaining direction:
 
-- Decide whether MVP includes `anchor`.
-- If `occupant` remains in MVP, add `Anchor` Domain model and `anchor.geojson` export.
-- If `anchor` is deferred, defer `occupant` from Apple-submission MVP export.
+- Confirm exported `anchor` and `occupant` relationships with Apple IMDF Sandbox.
+- Add topology checks for anchor coverage by the referenced unit.
+- Decide whether anchors can later be reused by fixtures, kiosks, or other IMDF features.
 
 ## Feature-Level Gap Table
 
@@ -131,8 +131,8 @@ Required direction:
 | Unit | Model exists | Category values need Apple alignment; level containment needs preflight | P1 |
 | Opening | Model exists | Category/access-control values need Apple alignment | P1 |
 | Amenity | Model exists | Coordinate optional but point geometry required; category values incomplete | P1 |
-| Occupant | Model exists | Requires anchor reference; category values incomplete | P0 decision |
-| Anchor | Not in MVP model | Required if exporting occupants | P0 decision |
+| Occupant | Model exists with anchor reference | Category values incomplete; Sandbox confirmation pending | P1 |
+| Anchor | Model and export exist locally | Coverage by referenced unit not yet checked locally | P1 |
 
 ## Apple Category Baseline For MVP
 
@@ -168,7 +168,7 @@ Use Apple category values as raw export values.
 2. Add explicit geometry/category fields for `Venue`, `Building`, `Footprint`, and `Level`. Done locally; Apple Sandbox confirmation pending.
 3. Align remaining MVP category enums with Apple category CSV raw values. Curated MVP presets are aligned locally; full category strategy remains open.
 4. Add a preflight validator for required relationships and required geometry. Started locally with model-level required data checks.
-5. Decide `Occupant + Anchor` scope before exporting occupants as Apple-submission data.
+5. Add `Occupant + Anchor` relationship support before exporting occupants as Apple-submission data. Done locally; Apple Sandbox confirmation pending.
 6. Add module tests:
    - `Domain`: entity construction and category raw values.
    - `Data`: exported ZIP file list and GeoJSON structure.
@@ -191,7 +191,8 @@ The first local preflight pass checks model-level issues that can be detected wi
 - Level has at least one unit.
 - Unit has enough coordinates to form a polygon.
 - Occupant has a category.
-- Occupant export is blocked until anchor support exists.
+- Occupant references an anchor.
+- Occupant anchor reference resolves to an anchor in the same unit.
 
 The preflight validator intentionally does not yet prove:
 
@@ -204,5 +205,5 @@ The preflight validator intentionally does not yet prove:
 
 - Should `Venue` polygon be drawn directly by the user, derived from building footprints, or both?
 - Should `Level` polygon be copied from the building footprint by default?
-- Should `Occupant` be deferred until `Anchor` is implemented?
+- Should anchors be shared only inside a unit, or should future editor tools surface a broader anchor management concept?
 - Should full Apple category lists be modeled as enums, or should the app store raw category strings plus curated presets?

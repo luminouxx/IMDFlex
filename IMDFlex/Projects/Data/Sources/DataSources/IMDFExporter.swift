@@ -24,6 +24,7 @@ private struct IMDFArchiveBuilder {
         files["footprint.geojson"] = try encode(collection(footprintFeatures()))
         files["level.geojson"] = try encode(collection(levelFeatures()))
         files["unit.geojson"] = try encode(collection(unitFeatures()))
+        files["anchor.geojson"] = try encode(collection(anchorFeatures()))
         files["opening.geojson"] = try encode(collection(openingFeatures()))
         files["amenity.geojson"] = try encode(collection(amenityFeatures()))
         files["occupant.geojson"] = try encode(collection(occupantFeatures()))
@@ -178,6 +179,27 @@ private struct IMDFArchiveBuilder {
         }
     }
 
+    private func anchorFeatures() -> [[String: Any]] {
+        venue.buildings.flatMap { building in
+            building.levels.flatMap { level in
+                level.units.flatMap { unit in
+                    unit.anchors.map { anchor in
+                        feature(
+                            id: anchor.id,
+                            featureType: "anchor",
+                            geometry: pointGeometry(anchor.coordinate),
+                            properties: compact([
+                                "unit_id": unit.id.uuidString,
+                                "level_id": level.id.uuidString,
+                                "building_id": building.id.uuidString
+                            ])
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private func amenityFeatures() -> [[String: Any]] {
         venue.buildings.flatMap { building in
             building.levels.flatMap { level in
@@ -213,12 +235,10 @@ private struct IMDFArchiveBuilder {
                             properties: compact([
                                 "name": localized(occupant.name),
                                 "category": occupant.category?.rawValue,
+                                "anchor_id": occupant.anchorID?.uuidString,
                                 "phone": occupant.phone,
                                 "website": occupant.website?.absoluteString,
-                                "hours": occupant.hours,
-                                "unit_id": unit.id.uuidString,
-                                "level_id": level.id.uuidString,
-                                "building_id": building.id.uuidString
+                                "hours": occupant.hours
                             ])
                         )
                     }
