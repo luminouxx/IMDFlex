@@ -4,10 +4,16 @@ import XCTest
 import Domain
 
 final class IMDFExporterTests: XCTestCase {
-    func testExportIncludesManifestAndMVPGeoJSONFiles() async throws {
-        let archive = try await IMDFExporter().export(sampleVenue())
+    func test_whenVenueIsExported_thenArchiveIncludesManifestAndMVPGeoJSONFiles() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
+
+        // When
+        let archive = try await sut.export(venue)
         let entries = try ZipArchiveReader.entries(from: archive)
 
+        // Then
         XCTAssertEqual(
             Set(entries.keys),
             [
@@ -25,41 +31,56 @@ final class IMDFExporterTests: XCTestCase {
         )
     }
 
-    func testExportWritesIMDFManifestVersion() async throws {
-        let archive = try await IMDFExporter().export(sampleVenue())
+    func test_whenVenueIsExported_thenManifestDeclaresIMDFVersion() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
+
+        // When
+        let archive = try await sut.export(venue)
         let entries = try ZipArchiveReader.entries(from: archive)
         let manifestData = try XCTUnwrap(entries["manifest.json"])
         let manifest = try XCTUnwrap(JSONSerialization.jsonObject(with: manifestData) as? [String: Any])
 
+        // Then
         XCTAssertEqual(manifest["version"] as? String, "1.0.0")
     }
 
-    func testExportWritesVenueFeatureCollection() async throws {
-        let venue = sampleVenue()
-        let archive = try await IMDFExporter().export(venue)
+    func test_whenVenueIsExported_thenVenueGeoJSONIsFeatureCollection() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
+
+        // When
+        let archive = try await sut.export(venue)
         let entries = try ZipArchiveReader.entries(from: archive)
         let venueCollection = try featureCollection(named: "venue.geojson", from: entries)
         let features = try XCTUnwrap(venueCollection["features"] as? [[String: Any]])
         let feature = try XCTUnwrap(features.first)
 
+        // Then
         XCTAssertEqual(venueCollection["type"] as? String, "FeatureCollection")
         XCTAssertEqual(features.count, 1)
         XCTAssertEqual(feature["id"] as? String, venue.id.uuidString)
         XCTAssertEqual(feature["feature_type"] as? String, "venue")
     }
 
-    func testExportWritesCoreFeatureSchemaProperties() async throws {
-        let venue = sampleVenue()
-        let archive = try await IMDFExporter().export(venue)
-        let entries = try ZipArchiveReader.entries(from: archive)
+    func test_whenVenueIsExported_thenCoreFeaturePropertiesUseIMDFSchemaValues() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
         let building = try XCTUnwrap(venue.buildings.first)
         let level = try XCTUnwrap(building.levels.first)
 
+        // When
+        let archive = try await sut.export(venue)
+        let entries = try ZipArchiveReader.entries(from: archive)
         let venueProperties = try properties(in: "venue.geojson", from: entries)
         let buildingProperties = try properties(in: "building.geojson", from: entries)
         let footprintProperties = try properties(in: "footprint.geojson", from: entries)
         let levelProperties = try properties(in: "level.geojson", from: entries)
 
+        // Then
         XCTAssertEqual(venueProperties["category"] as? String, "shoppingcenter")
         XCTAssertEqual(venueProperties["address_id"] as? String, venue.address?.id.uuidString)
         XCTAssertEqual(buildingProperties["category"] as? String, "unspecified")
@@ -71,16 +92,21 @@ final class IMDFExporterTests: XCTestCase {
         XCTAssertEqual(levelProperties["ordinal"] as? Int, level.ordinal)
     }
 
-    func testExportWritesCorePolygonGeometryAndDisplayPoints() async throws {
-        let archive = try await IMDFExporter().export(sampleVenue())
-        let entries = try ZipArchiveReader.entries(from: archive)
+    func test_whenVenueIsExported_thenCoreFeaturesUsePolygonGeometryAndDisplayPoints() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
 
+        // When
+        let archive = try await sut.export(venue)
+        let entries = try ZipArchiveReader.entries(from: archive)
         let venueFeature = try singleFeature(in: "venue.geojson", from: entries)
         let venueGeometry = try geometry(from: venueFeature)
         let venueCoordinates = try polygonCoordinates(from: venueGeometry)
         let venueProperties = try XCTUnwrap(venueFeature["properties"] as? [String: Any])
         let venueDisplayPoint = try XCTUnwrap(venueProperties["display_point"] as? [String: Any])
 
+        // Then
         XCTAssertEqual(venueGeometry["type"] as? String, "Polygon")
         XCTAssertEqual(venueCoordinates.first?.first, [-122.03130, 37.33150])
         XCTAssertEqual(venueCoordinates.first?.last, [-122.03130, 37.33150])
@@ -99,7 +125,11 @@ final class IMDFExporterTests: XCTestCase {
         XCTAssertNotNil(levelProperties["display_point"])
     }
 
-    private func sampleVenue() -> Venue {
+    private func makeSUT() -> IMDFExporter {
+        IMDFExporter()
+    }
+
+    private func makeVenueFixture() -> Venue {
         let unitCoordinates = [
             Coordinate(latitude: 37.33170, longitude: -122.03110),
             Coordinate(latitude: 37.33170, longitude: -122.03090),
