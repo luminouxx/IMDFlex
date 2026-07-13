@@ -18,6 +18,7 @@ final class IMDFExporterTests: XCTestCase {
             Set(entries.keys),
             [
                 "address.geojson",
+                "anchor.geojson",
                 "amenity.geojson",
                 "building.geojson",
                 "footprint.geojson",
@@ -125,6 +126,37 @@ final class IMDFExporterTests: XCTestCase {
         XCTAssertNotNil(levelProperties["display_point"])
     }
 
+    func test_whenVenueWithOccupantAnchorIsExported_thenAnchorAndOccupantReferenceAreSerialized() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
+        let building = try XCTUnwrap(venue.buildings.first)
+        let level = try XCTUnwrap(building.levels.first)
+        let unit = try XCTUnwrap(level.units.first)
+        let anchor = try XCTUnwrap(unit.anchors.first)
+        let occupant = try XCTUnwrap(unit.occupants.first)
+
+        // When
+        let archive = try await sut.export(venue)
+        let entries = try ZipArchiveReader.entries(from: archive)
+        let anchorFeature = try singleFeature(in: "anchor.geojson", from: entries)
+        let anchorGeometry = try geometry(from: anchorFeature)
+        let anchorProperties = try XCTUnwrap(anchorFeature["properties"] as? [String: Any])
+        let occupantProperties = try properties(in: "occupant.geojson", from: entries)
+
+        // Then
+        XCTAssertEqual(anchorFeature["id"] as? String, anchor.id.uuidString)
+        XCTAssertEqual(anchorFeature["feature_type"] as? String, "anchor")
+        XCTAssertEqual(anchorGeometry["type"] as? String, "Point")
+        XCTAssertEqual(try pointCoordinates(from: anchorGeometry), [-122.03100, 37.33180])
+        XCTAssertEqual(anchorProperties["unit_id"] as? String, unit.id.uuidString)
+        XCTAssertEqual(anchorProperties["level_id"] as? String, level.id.uuidString)
+        XCTAssertEqual(anchorProperties["building_id"] as? String, building.id.uuidString)
+        XCTAssertEqual(occupantProperties["anchor_id"] as? String, anchor.id.uuidString)
+        XCTAssertEqual(occupantProperties["category"] as? String, occupant.category?.rawValue)
+        XCTAssertNil(occupantProperties["unit_id"])
+    }
+
     private func makeSUT() -> IMDFExporter {
         IMDFExporter()
     }
@@ -148,10 +180,18 @@ final class IMDFExporterTests: XCTestCase {
             Coordinate(latitude: 37.33210, longitude: -122.03070),
             Coordinate(latitude: 37.33210, longitude: -122.03130)
         ]
-        let unit = Unit(
+        let anchor = Anchor(coordinate: Coordinate(latitude: 37.33180, longitude: -122.03100))
+        let occupant = Occupant(
+            name: "Tenant",
+            category: .retail,
+            anchorID: anchor.id
+        )
+        let unit = Domain.Unit(
             name: "Lobby",
             category: .lobby,
-            coordinates: unitCoordinates
+            coordinates: unitCoordinates,
+            anchors: [anchor],
+            occupants: [occupant]
         )
         let level = Level(
             name: "Level 1",
@@ -218,6 +258,10 @@ final class IMDFExporterTests: XCTestCase {
 
     private func polygonCoordinates(from geometry: [String: Any]) throws -> [[[Double]]] {
         try XCTUnwrap(geometry["coordinates"] as? [[[Double]]])
+    }
+
+    private func pointCoordinates(from geometry: [String: Any]) throws -> [Double] {
+        try XCTUnwrap(geometry["coordinates"] as? [Double])
     }
 }
 

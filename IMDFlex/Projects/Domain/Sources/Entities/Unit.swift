@@ -6,6 +6,7 @@ public struct Unit: Identifiable, Codable, Sendable {
     public var name: String?
     public var category: UnitCategory
     public var coordinates: [Coordinate]
+    public var anchors: [Anchor]
     public var amenities: [Amenity]
     public var occupants: [Occupant]
     
@@ -14,6 +15,7 @@ public struct Unit: Identifiable, Codable, Sendable {
         name: String? = nil,
         category: UnitCategory,
         coordinates: [Coordinate] = [],
+        anchors: [Anchor] = [],
         amenities: [Amenity] = [],
         occupants: [Occupant] = []
     ) {
@@ -21,6 +23,7 @@ public struct Unit: Identifiable, Codable, Sendable {
         self.name = name
         self.category = category
         self.coordinates = coordinates
+        self.anchors = anchors
         self.amenities = amenities
         self.occupants = occupants
     }
