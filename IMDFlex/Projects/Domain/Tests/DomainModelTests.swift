@@ -12,6 +12,34 @@ final class DomainModelTests: XCTestCase {
             category: .lobby,
             coordinates: coordinates
         )
+        let detail = Detail(
+            id: try uuid("00000000-0000-0000-0000-000000000007"),
+            name: "Wall Detail",
+            coordinates: lineCoordinates()
+        )
+        let fixture = Fixture(
+            id: try uuid("00000000-0000-0000-0000-000000000008"),
+            name: "Desk",
+            category: .desk,
+            coordinates: coordinates
+        )
+        let geofence = Geofence(
+            id: try uuid("00000000-0000-0000-0000-000000000009"),
+            name: "Paid Area",
+            category: .paidArea,
+            coordinates: coordinates
+        )
+        let kiosk = Kiosk(
+            id: try uuid("00000000-0000-0000-0000-000000000010"),
+            name: "Info Kiosk",
+            coordinates: coordinates
+        )
+        let section = Section(
+            id: try uuid("00000000-0000-0000-0000-000000000011"),
+            name: "Gate Area",
+            category: .gateArea,
+            coordinates: coordinates
+        )
         let level = Level(
             id: try uuid("00000000-0000-0000-0000-000000000002"),
             name: "Level 1",
@@ -19,7 +47,12 @@ final class DomainModelTests: XCTestCase {
             ordinal: 0,
             shortName: "1F",
             coordinates: coordinates,
-            units: [unit]
+            units: [unit],
+            details: [detail],
+            fixtures: [fixture],
+            geofences: [geofence],
+            kiosks: [kiosk],
+            sections: [section]
         )
         let footprint = Footprint(
             id: try uuid("00000000-0000-0000-0000-000000000003"),
@@ -41,6 +74,12 @@ final class DomainModelTests: XCTestCase {
             country: "US",
             postalCode: "95014"
         )
+        let relationship = Relationship(
+            id: try uuid("00000000-0000-0000-0000-000000000012"),
+            category: .stairs,
+            originID: unit.id,
+            destinationID: section.id
+        )
 
         // When
         let venue = Venue(
@@ -49,7 +88,8 @@ final class DomainModelTests: XCTestCase {
             category: .university,
             coordinates: coordinates,
             buildings: [building],
-            address: address
+            address: address,
+            relationships: [relationship]
         )
 
         // Then
@@ -60,9 +100,15 @@ final class DomainModelTests: XCTestCase {
         XCTAssertEqual(venue.buildings.first?.levels.first?.category, .unspecified)
         XCTAssertEqual(venue.buildings.first?.levels.first?.coordinates, coordinates)
         XCTAssertEqual(venue.buildings.first?.levels.first?.units.first?.id, unit.id)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.details.first?.id, detail.id)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.fixtures.first?.id, fixture.id)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.geofences.first?.id, geofence.id)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.kiosks.first?.id, kiosk.id)
+        XCTAssertEqual(venue.buildings.first?.levels.first?.sections.first?.id, section.id)
         XCTAssertEqual(venue.buildings.first?.footprint?.id, footprint.id)
         XCTAssertEqual(venue.buildings.first?.footprint?.category, .ground)
         XCTAssertEqual(venue.address?.id, address.id)
+        XCTAssertEqual(venue.relationships.first?.id, relationship.id)
     }
 
     func test_whenCoordinatesShareLatitudeAndLongitude_thenTheyAreEqual() {
@@ -116,7 +162,14 @@ final class DomainModelTests: XCTestCase {
             OccupantCategory.medical.rawValue,
             OccupantCategory.government.rawValue,
             OccupantCategory.entertainment.rawValue,
-            OccupantCategory.service.rawValue
+            OccupantCategory.service.rawValue,
+            FixtureCategory.desk.rawValue,
+            FixtureCategory.checkInDesk.rawValue,
+            GeofenceCategory.paidArea.rawValue,
+            RelationshipCategory.movingWalkway.rawValue,
+            RelationshipCategory.traversalPath.rawValue,
+            SectionCategory.gateArea.rawValue,
+            SectionCategory.postSecurity.rawValue
         ]
 
         // When
@@ -141,7 +194,14 @@ final class DomainModelTests: XCTestCase {
             "medicalcenter",
             "publicservices.government",
             "arts.entertainment",
-            "localservices"
+            "localservices",
+            "desk",
+            "checkin.desk",
+            "paidarea",
+            "movingwalkway",
+            "traversal.path",
+            "gatearea",
+            "postsecurity"
         ]
 
         // Then
@@ -158,6 +218,13 @@ final class DomainModelTests: XCTestCase {
             Coordinate(latitude: 37.33170, longitude: -122.03090),
             Coordinate(latitude: 37.33190, longitude: -122.03090),
             Coordinate(latitude: 37.33190, longitude: -122.03110)
+        ]
+    }
+
+    private func lineCoordinates() -> [Coordinate] {
+        [
+            Coordinate(latitude: 37.33175, longitude: -122.03105),
+            Coordinate(latitude: 37.33185, longitude: -122.03100)
         ]
     }
 }

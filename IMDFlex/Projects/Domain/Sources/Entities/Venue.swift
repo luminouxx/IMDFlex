@@ -8,6 +8,7 @@ public struct Venue: Identifiable, Codable, Sendable {
     public var coordinates: [Coordinate]
     public var buildings: [Building]
     public var address: Address?
+    public var relationships: [Relationship]
     
     public init(
         id: UUID = UUID(),
@@ -15,7 +16,8 @@ public struct Venue: Identifiable, Codable, Sendable {
         category: VenueCategory,
         coordinates: [Coordinate] = [],
         buildings: [Building] = [],
-        address: Address? = nil
+        address: Address? = nil,
+        relationships: [Relationship] = []
     ) {
         self.id = id
         self.name = name
@@ -23,6 +25,7 @@ public struct Venue: Identifiable, Codable, Sendable {
         self.coordinates = coordinates
         self.buildings = buildings
         self.address = address
+        self.relationships = relationships
     }
 }
 

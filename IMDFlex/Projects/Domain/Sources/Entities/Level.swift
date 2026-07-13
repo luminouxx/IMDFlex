@@ -10,6 +10,11 @@ public struct Level: Identifiable, Codable, Sendable {
     public var coordinates: [Coordinate]
     public var units: [Unit]
     public var openings: [Opening]
+    public var details: [Detail]
+    public var fixtures: [Fixture]
+    public var geofences: [Geofence]
+    public var kiosks: [Kiosk]
+    public var sections: [Section]
     
     public init(
         id: UUID = UUID(),
@@ -19,7 +24,12 @@ public struct Level: Identifiable, Codable, Sendable {
         shortName: String? = nil,
         coordinates: [Coordinate] = [],
         units: [Unit] = [],
-        openings: [Opening] = []
+        openings: [Opening] = [],
+        details: [Detail] = [],
+        fixtures: [Fixture] = [],
+        geofences: [Geofence] = [],
+        kiosks: [Kiosk] = [],
+        sections: [Section] = []
     ) {
         self.id = id
         self.name = name
@@ -29,6 +39,11 @@ public struct Level: Identifiable, Codable, Sendable {
         self.coordinates = coordinates
         self.units = units
         self.openings = openings
+        self.details = details
+        self.fixtures = fixtures
+        self.geofences = geofences
+        self.kiosks = kiosks
+        self.sections = sections
     }
 }
 
