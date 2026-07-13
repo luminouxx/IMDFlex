@@ -21,11 +21,17 @@ final class IMDFExporterTests: XCTestCase {
                 "anchor.geojson",
                 "amenity.geojson",
                 "building.geojson",
+                "detail.geojson",
+                "fixture.geojson",
                 "footprint.geojson",
+                "geofence.geojson",
+                "kiosk.geojson",
                 "level.geojson",
                 "manifest.json",
                 "occupant.geojson",
                 "opening.geojson",
+                "relationship.geojson",
+                "section.geojson",
                 "unit.geojson",
                 "venue.geojson"
             ]
@@ -157,6 +163,57 @@ final class IMDFExporterTests: XCTestCase {
         XCTAssertNil(occupantProperties["unit_id"])
     }
 
+    func test_whenAllIMDFFeaturesAreExported_thenNewFeatureCollectionsUseExpectedGeometryAndReferences() async throws {
+        // Given
+        let sut = makeSUT()
+        let venue = makeVenueFixture()
+        let building = try XCTUnwrap(venue.buildings.first)
+        let level = try XCTUnwrap(building.levels.first)
+        let detail = try XCTUnwrap(level.details.first)
+        let fixture = try XCTUnwrap(level.fixtures.first)
+        let geofence = try XCTUnwrap(level.geofences.first)
+        let kiosk = try XCTUnwrap(level.kiosks.first)
+        let section = try XCTUnwrap(level.sections.first)
+        let relationship = try XCTUnwrap(venue.relationships.first)
+
+        // When
+        let archive = try await sut.export(venue)
+        let entries = try ZipArchiveReader.entries(from: archive)
+        let detailGeometry = try geometry(in: "detail.geojson", from: entries)
+        let fixtureFeature = try singleFeature(in: "fixture.geojson", from: entries)
+        let fixtureGeometry = try geometry(from: fixtureFeature)
+        let fixtureProperties = try XCTUnwrap(fixtureFeature["properties"] as? [String: Any])
+        let geofenceProperties = try properties(in: "geofence.geojson", from: entries)
+        let kioskFeature = try singleFeature(in: "kiosk.geojson", from: entries)
+        let kioskGeometry = try geometry(in: "kiosk.geojson", from: entries)
+        let kioskProperties = try XCTUnwrap(kioskFeature["properties"] as? [String: Any])
+        let relationshipFeature = try singleFeature(in: "relationship.geojson", from: entries)
+        let relationshipProperties = try XCTUnwrap(relationshipFeature["properties"] as? [String: Any])
+        let sectionProperties = try properties(in: "section.geojson", from: entries)
+
+        // Then
+        XCTAssertEqual(detailGeometry["type"] as? String, "LineString")
+        XCTAssertEqual(try lineCoordinates(from: detailGeometry).first, [-122.03105, 37.33175])
+        XCTAssertEqual(detail.id.uuidString, try singleFeature(in: "detail.geojson", from: entries)["id"] as? String)
+
+        XCTAssertEqual(fixtureFeature["id"] as? String, fixture.id.uuidString)
+        XCTAssertEqual(fixtureGeometry["type"] as? String, "Polygon")
+        XCTAssertEqual(fixtureProperties["category"] as? String, fixture.category.rawValue)
+        XCTAssertEqual(fixtureProperties["level_id"] as? String, level.id.uuidString)
+        XCTAssertEqual(fixtureProperties["building_id"] as? String, building.id.uuidString)
+
+        XCTAssertEqual(geofenceProperties["category"] as? String, geofence.category.rawValue)
+        XCTAssertEqual(kioskFeature["id"] as? String, kiosk.id.uuidString)
+        XCTAssertEqual(kioskGeometry["type"] as? String, "Polygon")
+        XCTAssertEqual(kioskProperties["level_id"] as? String, level.id.uuidString)
+        XCTAssertEqual(relationshipFeature["id"] as? String, relationship.id.uuidString)
+        XCTAssertTrue(relationshipFeature["geometry"] is NSNull)
+        XCTAssertEqual(relationshipProperties["category"] as? String, relationship.category.rawValue)
+        XCTAssertEqual(relationshipProperties["origin_id"] as? String, relationship.originID.uuidString)
+        XCTAssertEqual(relationshipProperties["destination_id"] as? String, relationship.destinationID.uuidString)
+        XCTAssertEqual(sectionProperties["category"] as? String, section.category.rawValue)
+    }
+
     private func makeSUT() -> IMDFExporter {
         IMDFExporter()
     }
@@ -193,13 +250,44 @@ final class IMDFExporterTests: XCTestCase {
             anchors: [anchor],
             occupants: [occupant]
         )
+        let detail = Detail(
+            name: "Wall Detail",
+            coordinates: [
+                Coordinate(latitude: 37.33175, longitude: -122.03105),
+                Coordinate(latitude: 37.33185, longitude: -122.03100)
+            ]
+        )
+        let fixture = Fixture(
+            name: "Desk",
+            category: .desk,
+            coordinates: unitCoordinates
+        )
+        let geofence = Geofence(
+            name: "Paid Area",
+            category: .paidArea,
+            coordinates: footprintCoordinates
+        )
+        let kiosk = Kiosk(
+            name: "Info Kiosk",
+            coordinates: unitCoordinates
+        )
+        let section = Section(
+            name: "Gate Area",
+            category: .gateArea,
+            coordinates: footprintCoordinates
+        )
         let level = Level(
             name: "Level 1",
             category: .unspecified,
             ordinal: 0,
             shortName: "1F",
             coordinates: footprintCoordinates,
-            units: [unit]
+            units: [unit],
+            details: [detail],
+            fixtures: [fixture],
+            geofences: [geofence],
+            kiosks: [kiosk],
+            sections: [section]
         )
         let footprint = Footprint(
             category: .ground,
@@ -224,7 +312,14 @@ final class IMDFExporterTests: XCTestCase {
             category: .shoppingCenter,
             coordinates: venueCoordinates,
             buildings: [building],
-            address: address
+            address: address,
+            relationships: [
+                Relationship(
+                    category: .traversal,
+                    originID: unit.id,
+                    destinationID: section.id
+                )
+            ]
         )
     }
 
@@ -262,6 +357,10 @@ final class IMDFExporterTests: XCTestCase {
 
     private func pointCoordinates(from geometry: [String: Any]) throws -> [Double] {
         try XCTUnwrap(geometry["coordinates"] as? [Double])
+    }
+
+    private func lineCoordinates(from geometry: [String: Any]) throws -> [[Double]] {
+        try XCTUnwrap(geometry["coordinates"] as? [[Double]])
     }
 }
 

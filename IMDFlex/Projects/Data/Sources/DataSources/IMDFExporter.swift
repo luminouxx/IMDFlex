@@ -28,6 +28,12 @@ private struct IMDFArchiveBuilder {
         files["opening.geojson"] = try encode(collection(openingFeatures()))
         files["amenity.geojson"] = try encode(collection(amenityFeatures()))
         files["occupant.geojson"] = try encode(collection(occupantFeatures()))
+        files["detail.geojson"] = try encode(collection(detailFeatures()))
+        files["fixture.geojson"] = try encode(collection(fixtureFeatures()))
+        files["geofence.geojson"] = try encode(collection(geofenceFeatures()))
+        files["kiosk.geojson"] = try encode(collection(kioskFeatures()))
+        files["relationship.geojson"] = try encode(collection(relationshipFeatures()))
+        files["section.geojson"] = try encode(collection(sectionFeatures()))
 
         return files
     }
@@ -247,6 +253,126 @@ private struct IMDFArchiveBuilder {
         }
     }
 
+    private func detailFeatures() -> [[String: Any]] {
+        venue.buildings.flatMap { building in
+            building.levels.flatMap { level in
+                level.details.map { detail in
+                    feature(
+                        id: detail.id,
+                        featureType: "detail",
+                        geometry: lineGeometry(detail.coordinates),
+                        properties: compact([
+                            "name": localized(detail.name),
+                            "level_id": level.id.uuidString,
+                            "building_id": building.id.uuidString
+                        ])
+                    )
+                }
+            }
+        }
+    }
+
+    private func fixtureFeatures() -> [[String: Any]] {
+        venue.buildings.flatMap { building in
+            building.levels.flatMap { level in
+                level.fixtures.map { fixture in
+                    feature(
+                        id: fixture.id,
+                        featureType: "fixture",
+                        geometry: polygonGeometry(fixture.coordinates),
+                        properties: compact([
+                            "category": fixture.category.rawValue,
+                            "name": localized(fixture.name),
+                            "level_id": level.id.uuidString,
+                            "building_id": building.id.uuidString,
+                            "anchor_ids": uuidStrings(fixture.anchorIDs),
+                            "display_point": displayPoint(for: fixture.coordinates)
+                        ])
+                    )
+                }
+            }
+        }
+    }
+
+    private func geofenceFeatures() -> [[String: Any]] {
+        venue.buildings.flatMap { building in
+            building.levels.flatMap { level in
+                level.geofences.map { geofence in
+                    feature(
+                        id: geofence.id,
+                        featureType: "geofence",
+                        geometry: polygonGeometry(geofence.coordinates),
+                        properties: compact([
+                            "category": geofence.category.rawValue,
+                            "name": localized(geofence.name),
+                            "level_id": level.id.uuidString,
+                            "building_id": building.id.uuidString,
+                            "display_point": displayPoint(for: geofence.coordinates)
+                        ])
+                    )
+                }
+            }
+        }
+    }
+
+    private func kioskFeatures() -> [[String: Any]] {
+        venue.buildings.flatMap { building in
+            building.levels.flatMap { level in
+                level.kiosks.map { kiosk in
+                    feature(
+                        id: kiosk.id,
+                        featureType: "kiosk",
+                        geometry: polygonGeometry(kiosk.coordinates),
+                        properties: compact([
+                            "name": localized(kiosk.name),
+                            "level_id": level.id.uuidString,
+                            "building_id": building.id.uuidString,
+                            "anchor_ids": uuidStrings(kiosk.anchorIDs),
+                            "display_point": displayPoint(for: kiosk.coordinates)
+                        ])
+                    )
+                }
+            }
+        }
+    }
+
+    private func relationshipFeatures() -> [[String: Any]] {
+        venue.relationships.map { relationship in
+            feature(
+                id: relationship.id,
+                featureType: "relationship",
+                geometry: NSNull(),
+                properties: compact([
+                    "category": relationship.category.rawValue,
+                    "direction": relationship.direction?.rawValue,
+                    "origin_id": relationship.originID.uuidString,
+                    "destination_id": relationship.destinationID.uuidString
+                ])
+            )
+        }
+    }
+
+    private func sectionFeatures() -> [[String: Any]] {
+        venue.buildings.flatMap { building in
+            building.levels.flatMap { level in
+                level.sections.map { section in
+                    feature(
+                        id: section.id,
+                        featureType: "section",
+                        geometry: polygonGeometry(section.coordinates),
+                        properties: compact([
+                            "category": section.category.rawValue,
+                            "name": localized(section.name),
+                            "level_id": level.id.uuidString,
+                            "building_id": building.id.uuidString,
+                            "display_point": displayPoint(for: section.coordinates)
+                        ])
+                    )
+                }
+            }
+        }
+    }
+
     private func feature(
         id: UUID,
         featureType: String,
@@ -348,6 +474,11 @@ private struct IMDFArchiveBuilder {
     private func localized(_ value: String?) -> [String: String]? {
         guard let value, !value.isEmpty else { return nil }
         return ["ko": value]
+    }
+
+    private func uuidStrings(_ ids: [UUID]) -> [String]? {
+        guard !ids.isEmpty else { return nil }
+        return ids.map(\.uuidString)
     }
 
     private func compact(_ values: [String: Any?]) -> [String: Any] {
