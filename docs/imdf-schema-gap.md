@@ -1,6 +1,6 @@
 # IMDF Schema Gap
 
-This document tracks gaps between IMDFlex's current Domain/export model and Apple's official IMDF resources.
+This document tracks gaps between IMDFlex's current Domain/export model and Apple's official IMDF resources. The MVP scope now includes every Apple IMDF feature collection, with shallow manual authoring first.
 
 ## Source Baseline
 
@@ -118,21 +118,40 @@ Remaining direction:
 - Add topology checks for anchor coverage by the referenced unit.
 - Decide whether anchors can later be reused by fixtures, kiosks, or other IMDF features.
 
+### 7. Remaining IMDF Feature Collections Are Now MVP Scope
+
+Apple validation includes rules for these feature collections that were not part of the original core MVP:
+
+- `Detail`: `DetailMustHaveLinealGeometry`, `DetailMustReferenceLevel`
+- `Fixture`: `FixtureMustHavePolygonalGeometry`, `FixtureMustReferenceLevel`, `FixtureMustHaveCategory`
+- `Geofence`: `GeofenceMustHavePolygonalGeometry`, `GeofenceMustHaveCategory`, `GeofenceMustHaveLevelOrBuildingReference`
+- `Kiosk`: `KioskMustHavePolygonalGeometry`, `KioskMustReferenceLevel`
+- `Relationship`: `RelationshipMustHaveCategory`, `RelationshipCategoryMustBeValid`, `RelationshipDirectionMustBeValid`
+- `Section`: `SectionMustHavePolygonalGeometry`, `SectionMustReferenceLevel`, `SectionMustHaveCategory`
+
+Current Domain/export support for these features is implemented as shallow MVP coverage. Local preflight checks basic geometry and relationship endpoint resolution. Full topology validations such as feature coverage, display point containment, and anchor containment remain Apple Validator confirmation work.
+
 ## Feature-Level Gap Table
 
 | Feature | Current Status | Validator-Risk Gap | Priority |
 | --- | --- | --- | --- |
-| Manifest | Not exported | Required manifest missing | P0 |
+| Manifest | Export exists locally | Sandbox confirmation pending | P0 |
 | Address | Basic model exists | ISO country/province fields and reference semantics need review | P1 |
-| Venue | Model exists | Missing polygon geometry and display point | P0 |
-| Building | Model exists | Missing category; must have footprint and level references | P0 |
-| Footprint | Model exists | Missing category | P0 |
-| Level | Model exists | Missing polygon geometry and category; short name optional | P0 |
-| Unit | Model exists | Category values need Apple alignment; level containment needs preflight | P1 |
-| Opening | Model exists | Category/access-control values need Apple alignment | P1 |
+| Venue | Model/export exists locally | Display point containment and coverage pending | P1 |
+| Building | Model/export exists locally | Display point containment and relationship preflight pending | P1 |
+| Footprint | Model/export exists locally | Topology rules pending | P1 |
+| Level | Model/export exists locally | Coverage by units and containment pending | P1 |
+| Unit | Model/export exists locally | Level containment and accessibility/restriction expansion pending | P1 |
+| Opening | Model/export exists locally | Unit boundary coverage and door metadata pending | P1 |
 | Amenity | Model exists | Coordinate optional but point geometry required; category values incomplete | P1 |
 | Occupant | Model exists with anchor reference | Category values incomplete; Sandbox confirmation pending | P1 |
 | Anchor | Model and export exist locally | Coverage by referenced unit not yet checked locally | P1 |
+| Detail | Model/export/preflight exists locally | Topology and Sandbox confirmation pending | P1 |
+| Fixture | Model/export/preflight exists locally | Anchor containment and Sandbox confirmation pending | P1 |
+| Geofence | Model/export/preflight exists locally | Level/building reference strategy and Sandbox confirmation pending | P1 |
+| Kiosk | Model/export/preflight exists locally | Anchor containment and Sandbox confirmation pending | P1 |
+| Relationship | Model/export/preflight exists locally | Direction/property names need official Validator confirmation | P1 |
+| Section | Model/export/preflight exists locally | Coverage/display point containment pending | P1 |
 
 ## Apple Category Baseline For MVP
 
@@ -164,11 +183,11 @@ Use Apple category values as raw export values.
 
 ## Recommended Implementation Order
 
-1. Add `manifest.json` export and tests. Done locally; Apple Sandbox confirmation pending.
-2. Add explicit geometry/category fields for `Venue`, `Building`, `Footprint`, and `Level`. Done locally; Apple Sandbox confirmation pending.
-3. Align remaining MVP category enums with Apple category CSV raw values. Curated MVP presets are aligned locally; full category strategy remains open.
-4. Add a preflight validator for required relationships and required geometry. Started locally with model-level required data checks.
-5. Add `Occupant + Anchor` relationship support before exporting occupants as Apple-submission data. Done locally; Apple Sandbox confirmation pending.
+1. Keep existing core feature export and tests. Done locally; Apple Sandbox confirmation pending.
+2. Add all-feature MVP contract documentation. Done locally.
+3. Add Domain models for `detail`, `fixture`, `geofence`, `kiosk`, `relationship`, and `section`. Done locally.
+4. Extend `IMDFExporter` to write every IMDF feature collection. Done locally.
+5. Extend local preflight to cover required geometry, category, and references for all MVP features. Done locally for model-level checks.
 6. Add module tests:
    - `Domain`: entity construction and category raw values.
    - `Data`: exported ZIP file list and GeoJSON structure.
@@ -193,12 +212,21 @@ The first local preflight pass checks model-level issues that can be detected wi
 - Occupant has a category.
 - Occupant references an anchor.
 - Occupant anchor reference resolves to an anchor in the same unit.
+- Detail has enough coordinates to form a line.
+- Fixture has enough coordinates to form a polygon.
+- Geofence has enough coordinates to form a polygon.
+- Kiosk has enough coordinates to form a polygon.
+- Section has enough coordinates to form a polygon.
+- Relationship origin/destination references resolve to authored features.
+- Relationship origin and destination are not the same feature.
 
 The preflight validator intentionally does not yet prove:
 
 - Venue polygon covers all child features.
 - Display points are contained by their parent polygons.
 - Level/unit/footprint coverage is topologically correct.
+- Fixture/kiosk anchor containment is topologically correct.
+- Relationship property names and direction values are accepted by Apple IMDF Validator.
 - Apple IMDF Sandbox acceptance.
 
 ## Open Questions

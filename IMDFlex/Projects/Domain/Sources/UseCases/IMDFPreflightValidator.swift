@@ -9,8 +9,10 @@ public struct IMDFPreflightValidator: IMDFPreflightValidating, Sendable {
 
     public func validate(_ venue: Venue) -> [IMDFPreflightIssue] {
         var issues: [IMDFPreflightIssue] = []
+        let featureIDs = collectFeatureIDs(in: venue)
 
         validateVenue(venue, issues: &issues)
+        validateRelationships(venue.relationships, featureIDs: featureIDs, issues: &issues)
 
         for building in venue.buildings {
             validateBuilding(building, issues: &issues)
@@ -18,6 +20,7 @@ public struct IMDFPreflightValidator: IMDFPreflightValidating, Sendable {
             for level in building.levels {
                 validateLevel(level, building: building, issues: &issues)
                 validateUnits(in: level, issues: &issues)
+                validateLevelFeatureCollections(in: level, issues: &issues)
             }
         }
 
@@ -154,6 +157,100 @@ public struct IMDFPreflightValidator: IMDFPreflightValidating, Sendable {
         }
     }
 
+    private func validateLevelFeatureCollections(in level: Level, issues: inout [IMDFPreflightIssue]) {
+        for detail in level.details where !isValidLine(detail.coordinates) {
+            issues.append(
+                .init(
+                    code: .detailInvalidLine,
+                    severity: .error,
+                    feature: .detail,
+                    featureID: detail.id,
+                    message: "Detail must have at least two line coordinates."
+                )
+            )
+        }
+
+        for fixture in level.fixtures where !isValidPolygon(fixture.coordinates) {
+            issues.append(
+                .init(
+                    code: .fixtureInvalidPolygon,
+                    severity: .error,
+                    feature: .fixture,
+                    featureID: fixture.id,
+                    message: "Fixture must have at least three polygon coordinates."
+                )
+            )
+        }
+
+        for geofence in level.geofences where !isValidPolygon(geofence.coordinates) {
+            issues.append(
+                .init(
+                    code: .geofenceInvalidPolygon,
+                    severity: .error,
+                    feature: .geofence,
+                    featureID: geofence.id,
+                    message: "Geofence must have at least three polygon coordinates."
+                )
+            )
+        }
+
+        for kiosk in level.kiosks where !isValidPolygon(kiosk.coordinates) {
+            issues.append(
+                .init(
+                    code: .kioskInvalidPolygon,
+                    severity: .error,
+                    feature: .kiosk,
+                    featureID: kiosk.id,
+                    message: "Kiosk must have at least three polygon coordinates."
+                )
+            )
+        }
+
+        for section in level.sections where !isValidPolygon(section.coordinates) {
+            issues.append(
+                .init(
+                    code: .sectionInvalidPolygon,
+                    severity: .error,
+                    feature: .section,
+                    featureID: section.id,
+                    message: "Section must have at least three polygon coordinates."
+                )
+            )
+        }
+    }
+
+    private func validateRelationships(
+        _ relationships: [Relationship],
+        featureIDs: Set<UUID>,
+        issues: inout [IMDFPreflightIssue]
+    ) {
+        for relationship in relationships {
+            if relationship.originID == relationship.destinationID {
+                issues.append(
+                    .init(
+                        code: .relationshipSelfReference,
+                        severity: .error,
+                        feature: .relationship,
+                        featureID: relationship.id,
+                        message: "Relationship origin and destination must reference different features."
+                    )
+                )
+            }
+
+            if !featureIDs.contains(relationship.originID) || !featureIDs.contains(relationship.destinationID) {
+                issues.append(
+                    .init(
+                        code: .relationshipEndpointNotFound,
+                        severity: .error,
+                        feature: .relationship,
+                        featureID: relationship.id,
+                        message: "Relationship origin and destination references must resolve to authored features."
+                    )
+                )
+            }
+        }
+    }
+
     private func validateOccupant(
         _ occupant: Occupant,
         anchors: [Anchor],
@@ -201,12 +298,50 @@ public struct IMDFPreflightValidator: IMDFPreflightValidating, Sendable {
         uniqueCoordinates(in: coordinates).count >= 3
     }
 
+    private func isValidLine(_ coordinates: [Coordinate]) -> Bool {
+        uniqueCoordinates(in: coordinates).count >= 2
+    }
+
     private func uniqueCoordinates(in coordinates: [Coordinate]) -> [Coordinate] {
         coordinates.reduce(into: []) { result, coordinate in
             if !result.contains(coordinate) {
                 result.append(coordinate)
             }
         }
+    }
+
+    private func collectFeatureIDs(in venue: Venue) -> Set<UUID> {
+        var ids: Set<UUID> = [venue.id]
+
+        if let address = venue.address {
+            ids.insert(address.id)
+        }
+
+        for building in venue.buildings {
+            ids.insert(building.id)
+
+            if let footprint = building.footprint {
+                ids.insert(footprint.id)
+            }
+
+            for level in building.levels {
+                ids.insert(level.id)
+                ids.formUnion(level.units.flatMap { unit in
+                    [unit.id]
+                        + unit.anchors.map(\.id)
+                        + unit.amenities.map(\.id)
+                        + unit.occupants.map(\.id)
+                })
+                ids.formUnion(level.openings.map(\.id))
+                ids.formUnion(level.details.map(\.id))
+                ids.formUnion(level.fixtures.map(\.id))
+                ids.formUnion(level.geofences.map(\.id))
+                ids.formUnion(level.kiosks.map(\.id))
+                ids.formUnion(level.sections.map(\.id))
+            }
+        }
+
+        return ids
     }
 }
 
@@ -253,6 +388,13 @@ public enum IMDFPreflightIssueCode: String, Codable, CaseIterable, Sendable {
     case occupantMissingCategory
     case occupantMissingAnchor
     case occupantAnchorNotFound
+    case detailInvalidLine
+    case fixtureInvalidPolygon
+    case geofenceInvalidPolygon
+    case kioskInvalidPolygon
+    case relationshipEndpointNotFound
+    case relationshipSelfReference
+    case sectionInvalidPolygon
 }
 
 public enum IMDFPreflightSeverity: String, Codable, CaseIterable, Sendable {
@@ -268,4 +410,10 @@ public enum IMDFPreflightFeature: String, Codable, CaseIterable, Sendable {
     case unit
     case anchor
     case occupant
+    case detail
+    case fixture
+    case geofence
+    case kiosk
+    case relationship
+    case section
 }

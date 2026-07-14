@@ -22,7 +22,7 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
   7. Export `imdf.zip`.
   8. Run preflight checks and guide Apple IMDF Validator verification.
 - Floor-plan overlays should support moving, scaling, rotating, opacity adjustment, and alignment against the building outline.
-- The MVP IMDF feature scope is:
+- The MVP IMDF feature scope includes every Apple IMDF feature collection, with simple manual authoring depth first:
   - `address`
   - `venue`
   - `building`
@@ -31,7 +31,14 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
   - `unit`
   - `opening`
   - `amenity`
+  - `anchor`
   - `occupant`
+  - `detail`
+  - `fixture`
+  - `geofence`
+  - `kiosk`
+  - `relationship`
+  - `section`
 
 ## Technology
 

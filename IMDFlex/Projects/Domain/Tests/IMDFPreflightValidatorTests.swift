@@ -155,6 +155,51 @@ final class IMDFPreflightValidatorTests: XCTestCase {
         XCTAssertEqual(issues.first?.featureID, anchorID)
     }
 
+    func test_whenAllFeatureMVPGeometryAndRelationshipsAreInvalid_thenValidatorReturnsFeatureIssues() {
+        // Given
+        let sut = makeSUT()
+        let unit = makeUnitFixture()
+        let level = Level(
+            name: "Level 1",
+            ordinal: 0,
+            shortName: "1F",
+            coordinates: squareCoordinates(),
+            units: [unit],
+            details: [Detail(coordinates: [Coordinate(latitude: 37.0, longitude: -122.0)])],
+            fixtures: [Fixture(coordinates: [])],
+            geofences: [Geofence(coordinates: [])],
+            kiosks: [Kiosk(coordinates: [])],
+            sections: [Section(coordinates: [])]
+        )
+        let relationship = Relationship(
+            category: .traversal,
+            originID: unit.id,
+            destinationID: UUID()
+        )
+        let building = Building(name: "Main", levels: [level], footprint: makeFootprintFixture())
+        let venue = makeVenueFixture(buildings: [building], relationships: [relationship])
+
+        // When
+        let issues = sut.validate(venue)
+
+        // Then
+        XCTAssertEqual(
+            issueCodes(in: issues),
+            [
+                .relationshipEndpointNotFound,
+                .detailInvalidLine,
+                .fixtureInvalidPolygon,
+                .geofenceInvalidPolygon,
+                .kioskInvalidPolygon,
+                .sectionInvalidPolygon
+            ]
+        )
+        XCTAssertEqual(
+            issues.map(\.feature),
+            [.relationship, .detail, .fixture, .geofence, .kiosk, .section]
+        )
+    }
+
     func test_whenIssueIsCreated_thenIDIncludesCodeFeatureAndFeatureID() throws {
         // Given
         let featureID = try XCTUnwrap(UUID(uuidString: "00000000-0000-0000-0000-000000000017"))
@@ -177,7 +222,10 @@ final class IMDFPreflightValidatorTests: XCTestCase {
         IMDFPreflightValidator()
     }
 
-    private func makeVenueFixture(buildings: [Building]? = nil) -> Venue {
+    private func makeVenueFixture(
+        buildings: [Building]? = nil,
+        relationships: [Relationship] = []
+    ) -> Venue {
         Venue(
             name: "Valid Venue",
             category: .university,
@@ -189,7 +237,8 @@ final class IMDFPreflightValidatorTests: XCTestCase {
                 province: "CA",
                 country: "US",
                 postalCode: "95014"
-            )
+            ),
+            relationships: relationships
         )
     }
 

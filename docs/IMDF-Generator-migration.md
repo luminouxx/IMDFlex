@@ -13,7 +13,7 @@ IMDFlex continues the product direction from `luminouxx/IMDF-Generator`, but kee
 
 ## MVP Feature Scope
 
-The MVP targets these IMDF feature collections:
+The MVP now targets every Apple IMDF feature collection, while keeping manual authoring depth simple at first:
 
 - `address.geojson`
 - `venue.geojson`
@@ -23,7 +23,14 @@ The MVP targets these IMDF feature collections:
 - `unit.geojson`
 - `opening.geojson`
 - `amenity.geojson`
+- `anchor.geojson`
 - `occupant.geojson`
+- `detail.geojson`
+- `fixture.geojson`
+- `geofence.geojson`
+- `kiosk.geojson`
+- `relationship.geojson`
+- `section.geojson`
 
 ## Product Workflow
 
@@ -50,4 +57,4 @@ The MVP targets these IMDF feature collections:
 4. Port and redesign the image overlay alignment flow for level-specific floor plans.
 5. Replace the current nested Domain aggregate with explicit feature repositories if editing complexity grows.
 
-See `docs/imdf-schema-gap.md` for the current Apple IMDF validation and category gap analysis.
+See `docs/all-imdf-feature-mvp-plan.md` for the all-feature MVP implementation plan and `docs/imdf-schema-gap.md` for the current Apple IMDF validation and category gap analysis.
