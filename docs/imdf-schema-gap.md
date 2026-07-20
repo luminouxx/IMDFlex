@@ -98,9 +98,11 @@ Resolved examples:
 
 Remaining direction:
 
-- Decide whether full Apple category lists should be modeled as enums, raw strings, or curated presets.
+- Use curated Swift enums as common presets and `IMDFCategoryCatalog` as the full Apple raw-value foundation.
 - Add UI-facing labels separate from IMDF raw values.
 - Continue adding tests when new category presets are introduced.
+
+See `docs/imdf-category-catalog.md` for the category catalog strategy.
 
 ### 6. Occupant Requires Anchor
 
