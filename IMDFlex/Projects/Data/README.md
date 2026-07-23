@@ -8,6 +8,8 @@ Repository implementations and data sources.
 Sources/
 ├── Repositories/    # Protocol implementations
 └── DataSources/     # File I/O, JSON parsing
+Resources/
+└── *.json           # Generated bundled data resources
 ```
 
 ## Guidelines
@@ -23,6 +25,7 @@ Sources/
 ### DataSources
 - Keep I/O operations isolated
 - Handle encoding/decoding errors gracefully
+- Generated category catalog resources are loaded through `IMDFCategoryCatalogJSONLoader`
 
 ## Dependencies
 

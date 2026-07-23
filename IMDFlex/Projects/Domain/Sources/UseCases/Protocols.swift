@@ -12,3 +12,8 @@ public protocol ProjectRepositoryProtocol: Sendable {
 public protocol IMDFExporterProtocol: Sendable {
     func export(_ venue: Venue) async throws -> Data
 }
+
+/// IMDF category catalog loading protocol implemented by the Data layer.
+public protocol IMDFCategoryCatalogLoading: Sendable {
+    func loadCatalog() async throws -> IMDFCategoryCatalog
+}

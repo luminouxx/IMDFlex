@@ -3,5 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.module(
     module: .data,
-    dependencies: .dataDependencies
+    dependencies: .dataDependencies,
+    resources: ["Resources/**"]
 )

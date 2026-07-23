@@ -52,11 +52,22 @@ This avoids generating huge Swift enums for sets such as `occupant` while still 
 - `IMDFCategoryCatalog`: lookup by feature and raw value.
 - `IMDFCategoryCatalogSource.appleCategories20210728FeatureSummaries`: official count summaries and representative values used by tests.
 
-The full CSV is not bundled into the app yet.
+The full catalog is stored as generated JSON:
+
+- Resource: `IMDFlex/Projects/Data/Resources/IMDFCategoryCatalog.generated.json`
+- Loader: `IMDFCategoryCatalogJSONLoader`
+- Generated distinct entries: 1,533
+
+Regenerate it from the Apple CSV with:
+
+```bash
+python3 scripts/generate_imdf_category_catalog_json.py \
+  /Users/luminoux/Downloads/IMDF/categories_20210728.csv \
+  IMDFlex/Projects/Data/Resources/IMDFCategoryCatalog.generated.json
+```
 
 ## Next Steps
 
-1. Decide whether the full catalog should be stored as a bundled CSV/JSON resource or generated Swift data.
-2. Add a parser/loader in `Data` if bundling a CSV or JSON resource.
-3. Let Presentation category pickers query the catalog by feature type.
-4. Gradually allow Domain feature categories to preserve raw strings in addition to curated enum presets.
+1. Let Presentation category pickers query the catalog by feature type.
+2. Add search/filter behavior using `localizedStandardContains()` for user-facing category selection.
+3. Gradually allow Domain feature categories to preserve raw strings in addition to curated enum presets.
