@@ -17,6 +17,7 @@ Sources/
 - No business logic in this module
 - Keep editor controls stable in size so selection state does not shift layout
 - Prefer semantic roles over feature-specific component names
+- Prefer small composable components over option-heavy components
 
 ## Dependencies
 
@@ -48,6 +49,8 @@ IMDFToolButton(
 ) {}
 ```
 
+`IMDFToolButton` is icon-only by default. Add label-capable variants later when a real editor layout needs them.
+
 ### Status Badge
 
 ```swift
@@ -62,11 +65,14 @@ IMDFPanel(role: .inspector) {
 }
 ```
 
+`IMDFPanel` is only a surface container. Header, footer, loading, and inspector-specific behavior should be composed by higher-level components.
+
 ## ⚠️ Rules
 
 - **DO NOT** import Domain or Data
 - **DO NOT** include app-specific or business logic
 - **DO NOT** reference specific screens or features
+- **DO NOT** grow base components with unrelated optional behavior
 
 ## Contributing
 

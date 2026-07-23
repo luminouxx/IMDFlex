@@ -74,8 +74,6 @@ public struct IMDFPanel<Content: View>: View {
     }
 }
 
-public typealias CardView = IMDFPanel
-
 #Preview("Panels") {
     VStack(spacing: IMDFSpacing.lg) {
         IMDFPanel(role: .floating) {
