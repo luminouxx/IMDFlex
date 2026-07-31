@@ -104,6 +104,8 @@ Test repository behavior, serializers, exporters, ZIP structure, GeoJSON shape, 
 
 Test observable state models, coordinators, editor state machines, drawing tools, and async user flows. Public APIs should be awaitable whenever possible. Avoid hidden `Task {}` timing that forces sleeps or flaky expectations.
 
+For MVVM surfaces, test ViewModel display state and intents directly. SwiftUI views should be thin enough that they mainly need build verification until snapshot/UI testing is explicitly introduced.
+
 ### DesignSystem And App
 
 Prefer build verification unless there is meaningful behavior to test. Snapshot testing for SwiftUI views can be considered later with explicit dependency approval.
