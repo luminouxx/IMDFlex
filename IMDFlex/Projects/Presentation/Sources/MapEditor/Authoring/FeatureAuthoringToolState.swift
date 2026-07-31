@@ -171,18 +171,18 @@ public struct IMDFAuthoringContract: Codable, Equatable, Sendable {
 @Observable
 public final class FeatureAuthoringToolState {
     public private(set) var selectedFeature: IMDFAuthoringFeature
-    public private(set) var draftedPointCount: Int
+    public private(set) var drawingDraft: DrawingDraftState
     public private(set) var hasSelectedCategory: Bool
     public private(set) var satisfiedReferences: Set<IMDFAuthoringReference>
 
     public init(
         selectedFeature: IMDFAuthoringFeature = .unit,
-        draftedPointCount: Int = 0,
+        drawingDraft: DrawingDraftState? = nil,
         hasSelectedCategory: Bool = false,
         satisfiedReferences: Set<IMDFAuthoringReference> = []
     ) {
         self.selectedFeature = selectedFeature
-        self.draftedPointCount = draftedPointCount
+        self.drawingDraft = drawingDraft ?? DrawingDraftState(geometry: selectedFeature.contract.geometry)
         self.hasSelectedCategory = hasSelectedCategory
         self.satisfiedReferences = satisfiedReferences
     }
@@ -196,7 +196,15 @@ public final class FeatureAuthoringToolState {
     }
 
     public var remainingPointCount: Int {
-        max(0, contract.geometry.minimumPointCount - draftedPointCount)
+        drawingDraft.remainingPointCount
+    }
+
+    public var draftedPointCount: Int {
+        drawingDraft.pointCount
+    }
+
+    public var draftedCoordinates: [IMDFDraftCoordinate] {
+        drawingDraft.coordinates
     }
 
     public var isCategorySatisfied: Bool {
@@ -213,11 +221,15 @@ public final class FeatureAuthoringToolState {
     }
 
     public func addDraftPoint() {
-        draftedPointCount += 1
+        appendDraftCoordinate(.placeholder)
+    }
+
+    public func appendDraftCoordinate(_ coordinate: IMDFDraftCoordinate) {
+        drawingDraft.append(coordinate)
     }
 
     public func removeLastDraftPoint() {
-        draftedPointCount = max(0, draftedPointCount - 1)
+        drawingDraft.removeLastCoordinate()
     }
 
     public func setCategorySelected(_ isSelected: Bool) {
@@ -240,8 +252,14 @@ public final class FeatureAuthoringToolState {
         resetDraft()
     }
 
+    public func finishDrawingDraft() -> IMDFDrawingDraftResult? {
+        guard canFinish else { return nil }
+
+        return drawingDraft.finish()
+    }
+
     private var hasEnoughGeometry: Bool {
-        draftedPointCount >= contract.geometry.minimumPointCount
+        drawingDraft.canFinish
     }
 
     private var hasRequiredCategory: Bool {
@@ -253,8 +271,12 @@ public final class FeatureAuthoringToolState {
     }
 
     private func resetDraft() {
-        draftedPointCount = 0
+        drawingDraft.setGeometry(contract.geometry)
         hasSelectedCategory = false
         satisfiedReferences = []
     }
+}
+
+private extension IMDFDraftCoordinate {
+    static let placeholder = IMDFDraftCoordinate(longitude: 0, latitude: 0)
 }

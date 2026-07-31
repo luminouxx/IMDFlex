@@ -75,7 +75,7 @@ The current shell intentionally does not implement:
 - map locking
 - level selection
 - floor-plan overlay alignment
-- coordinate storage
+- MapKit gesture coordinate capture
 - GeoJSON conversion
 - Domain feature creation
 - `imdf.zip` export
