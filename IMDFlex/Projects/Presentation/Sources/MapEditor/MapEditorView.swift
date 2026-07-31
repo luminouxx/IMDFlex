@@ -4,18 +4,17 @@ import MapKit
 import SwiftUI
 
 public struct MapEditorView: View {
-    let project: IMDFProject
-
-    @State private var cameraPosition: MapCameraPosition = .automatic
-    @State private var authoringState = FeatureAuthoringToolState()
+    @State private var viewModel: MapEditorViewModel
 
     public init(project: IMDFProject) {
-        self.project = project
+        self._viewModel = State(initialValue: MapEditorViewModel(project: project))
     }
 
     public var body: some View {
+        @Bindable var viewModel = viewModel
+
         ZStack {
-            Map(position: $cameraPosition)
+            Map(position: $viewModel.cameraPosition)
                 .mapStyle(.standard)
                 .ignoresSafeArea(edges: .bottom)
 
@@ -23,17 +22,39 @@ public struct MapEditorView: View {
                 HStack(alignment: .top, spacing: IMDFSpacing.md) {
                     Spacer(minLength: 0)
 
-                    AuthoringInspector(state: authoringState)
+                    AuthoringInspector(
+                        selectedFeature: viewModel.selectedFeatureDescriptor,
+                        geometry: viewModel.geometryDescriptor,
+                        draftProgressText: viewModel.draftProgressText,
+                        draftStatus: viewModel.draftStatus,
+                        categoryRequirement: viewModel.categoryRequirement,
+                        referenceRequirement: viewModel.referenceRequirement,
+                        canAddDraftPoint: viewModel.canAddDraftPoint,
+                        canRemoveDraftPoint: viewModel.canRemoveDraftPoint,
+                        canFinishDraft: viewModel.canFinishDraft,
+                        onToggleCategorySelection: viewModel.toggleCategorySelection,
+                        onSatisfyRequiredReferences: viewModel.satisfyRequiredReferences,
+                        onAddDraftPoint: viewModel.addDraftPoint,
+                        onRemoveLastDraftPoint: viewModel.removeLastDraftPoint,
+                        onCancelDraft: viewModel.cancelDraft,
+                        onFinishDraft: {
+                            viewModel.finishDraft()
+                        }
+                    )
                         .frame(width: 300)
                 }
 
                 Spacer(minLength: 0)
 
-                AuthoringFeatureToolbar(state: authoringState)
+                AuthoringFeatureToolbar(
+                    featureTools: viewModel.featureTools,
+                    selectedFeature: viewModel.selectedFeature,
+                    onSelectFeature: viewModel.selectFeature
+                )
             }
             .padding(IMDFSpacing.lg)
         }
-        .navigationTitle(project.name)
+        .navigationTitle(viewModel.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -50,19 +71,21 @@ public struct MapEditorView: View {
 }
 
 private struct AuthoringFeatureToolbar: View {
-    let state: FeatureAuthoringToolState
+    let featureTools: [IMDFAuthoringFeatureDisplayDescriptor]
+    let selectedFeature: IMDFAuthoringFeature
+    let onSelectFeature: (IMDFAuthoringFeature) -> Void
 
     var body: some View {
         IMDFPanel(role: .floating) {
             ScrollView(.horizontal) {
                 HStack(spacing: IMDFSpacing.sm) {
-                    ForEach(IMDFAuthoringFeature.allCases) { feature in
+                    ForEach(featureTools) { feature in
                         IMDFToolButton(
                             title: feature.title,
                             systemImage: feature.systemImage,
-                            isSelected: state.selectedFeature == feature
+                            isSelected: selectedFeature == feature.feature
                         ) {
-                            state.selectFeature(feature)
+                            onSelectFeature(feature.feature)
                         }
                     }
                 }
@@ -73,86 +96,110 @@ private struct AuthoringFeatureToolbar: View {
 }
 
 private struct AuthoringInspector: View {
-    let state: FeatureAuthoringToolState
+    let selectedFeature: IMDFAuthoringFeatureDisplayDescriptor
+    let geometry: IMDFAuthoringGeometryDisplayDescriptor
+    let draftProgressText: String
+    let draftStatus: MapEditorDraftStatusDisplayState
+    let categoryRequirement: MapEditorRequirementDisplayState?
+    let referenceRequirement: MapEditorRequirementDisplayState
+    let canAddDraftPoint: Bool
+    let canRemoveDraftPoint: Bool
+    let canFinishDraft: Bool
+    let onToggleCategorySelection: () -> Void
+    let onSatisfyRequiredReferences: () -> Void
+    let onAddDraftPoint: () -> Void
+    let onRemoveLastDraftPoint: () -> Void
+    let onCancelDraft: () -> Void
+    let onFinishDraft: () -> Void
 
     var body: some View {
         IMDFPanel(role: .inspector) {
             VStack(alignment: .leading, spacing: IMDFSpacing.lg) {
-                IMDFInspectorSection(title: state.selectedFeature.title) {
+                IMDFInspectorSection(title: selectedFeature.title) {
                     IMDFInspectorRow(
                         title: "Geometry",
-                        value: state.contract.geometry.title,
-                        systemImage: state.contract.geometry.systemImage
+                        value: geometry.title,
+                        systemImage: geometry.systemImage
                     )
 
                     IMDFInspectorRow(title: "Draft points", systemImage: "point.3.connected.trianglepath.dotted") {
-                        Text("\(state.draftedPointCount)/\(state.contract.geometry.minimumPointCount)")
+                        Text(draftProgressText)
                     }
 
-                    IMDFInspectorRow(title: "Status", systemImage: state.canFinish ? "checkmark.circle" : "clock") {
+                    IMDFInspectorRow(title: "Status", systemImage: draftStatus.systemImage) {
                         IMDFStatusBadge(
-                            state.canFinish ? "Ready" : "Draft",
-                            systemImage: state.canFinish ? "checkmark.circle" : "clock",
-                            role: state.canFinish ? .success : .warning
+                            draftStatus.title,
+                            systemImage: draftStatus.systemImage,
+                            role: draftStatus.isReady ? .success : .warning
                         )
                     }
                 }
 
-                RequirementSection(state: state)
-                DraftControls(state: state)
+                RequirementSection(
+                    categoryRequirement: categoryRequirement,
+                    referenceRequirement: referenceRequirement,
+                    onToggleCategorySelection: onToggleCategorySelection,
+                    onSatisfyRequiredReferences: onSatisfyRequiredReferences
+                )
+                DraftControls(
+                    canAddDraftPoint: canAddDraftPoint,
+                    canRemoveDraftPoint: canRemoveDraftPoint,
+                    canFinishDraft: canFinishDraft,
+                    onAddDraftPoint: onAddDraftPoint,
+                    onRemoveLastDraftPoint: onRemoveLastDraftPoint,
+                    onCancelDraft: onCancelDraft,
+                    onFinishDraft: onFinishDraft
+                )
             }
         }
     }
 }
 
 private struct RequirementSection: View {
-    let state: FeatureAuthoringToolState
+    let categoryRequirement: MapEditorRequirementDisplayState?
+    let referenceRequirement: MapEditorRequirementDisplayState
+    let onToggleCategorySelection: () -> Void
+    let onSatisfyRequiredReferences: () -> Void
 
     var body: some View {
         IMDFInspectorSection(title: "Requirements") {
-            if state.contract.requiresCategory {
+            if let categoryRequirement {
                 Button {
-                    state.setCategorySelected(!state.hasSelectedCategory)
+                    onToggleCategorySelection()
                 } label: {
                     requirementRow(
-                        title: "Category",
-                        value: state.hasSelectedCategory ? "Selected" : "Required",
-                        isReady: state.hasSelectedCategory
+                        state: categoryRequirement
                     )
                 }
                 .buttonStyle(.plain)
             }
 
-            if state.contract.requiredReferences.isEmpty {
-                requirementRow(title: "References", value: "None", isReady: true)
+            if referenceRequirement.value == "None" {
+                requirementRow(state: referenceRequirement)
             } else {
                 Button {
-                    state.satisfyRequiredReferences()
+                    onSatisfyRequiredReferences()
                 } label: {
-                    requirementRow(
-                        title: "References",
-                        value: state.missingReferences.isEmpty ? "Linked" : state.missingReferences.map(\.title).joined(separator: ", "),
-                        isReady: state.missingReferences.isEmpty
-                    )
+                    requirementRow(state: referenceRequirement)
                 }
                 .buttonStyle(.plain)
             }
         }
     }
 
-    private func requirementRow(title: String, value: String, isReady: Bool) -> some View {
+    private func requirementRow(state: MapEditorRequirementDisplayState) -> some View {
         HStack(spacing: IMDFSpacing.sm) {
-            Image(systemName: isReady ? "checkmark.circle.fill" : "circle")
+            Image(systemName: state.isReady ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: IMDFIconSize.sm, weight: .semibold))
-                .foregroundStyle(isReady ? IMDFColor.success : .secondary)
+                .foregroundStyle(state.isReady ? IMDFColor.success : .secondary)
 
-            Text(title)
+            Text(state.title)
                 .font(IMDFFont.inspectorLabel)
                 .foregroundStyle(.secondary)
 
             Spacer(minLength: IMDFSpacing.md)
 
-            Text(value)
+            Text(state.value)
                 .font(IMDFFont.inspectorValue)
                 .lineLimit(1)
         }
@@ -162,108 +209,45 @@ private struct RequirementSection: View {
 }
 
 private struct DraftControls: View {
-    let state: FeatureAuthoringToolState
+    let canAddDraftPoint: Bool
+    let canRemoveDraftPoint: Bool
+    let canFinishDraft: Bool
+    let onAddDraftPoint: () -> Void
+    let onRemoveLastDraftPoint: () -> Void
+    let onCancelDraft: () -> Void
+    let onFinishDraft: () -> Void
 
     var body: some View {
         HStack(spacing: IMDFSpacing.sm) {
             IMDFToolButton(title: "Add point", systemImage: "plus") {
-                state.addDraftPoint()
+                onAddDraftPoint()
             }
-            .disabled(state.contract.geometry == .form)
+            .disabled(!canAddDraftPoint)
 
             IMDFToolButton(title: "Remove point", systemImage: "minus") {
-                state.removeLastDraftPoint()
+                onRemoveLastDraftPoint()
             }
-            .disabled(state.draftedPointCount == 0)
+            .disabled(!canRemoveDraftPoint)
 
             IMDFToolButton(title: "Cancel draft", systemImage: "xmark") {
-                state.cancel()
+                onCancelDraft()
             }
 
             IMDFToolButton(
                 title: "Finish draft",
                 systemImage: "checkmark",
-                isSelected: state.canFinish,
+                isSelected: canFinishDraft,
                 role: .primary
-            ) {}
-            .disabled(!state.canFinish)
+            ) {
+                onFinishDraft()
+            }
+            .disabled(!canFinishDraft)
         }
     }
 }
 
-private extension IMDFAuthoringFeature {
-    var title: String {
-        switch self {
-        case .address: "Address"
-        case .venue: "Venue"
-        case .building: "Building"
-        case .footprint: "Footprint"
-        case .level: "Level"
-        case .unit: "Unit"
-        case .opening: "Opening"
-        case .amenity: "Amenity"
-        case .anchor: "Anchor"
-        case .occupant: "Occupant"
-        case .detail: "Detail"
-        case .fixture: "Fixture"
-        case .geofence: "Geofence"
-        case .kiosk: "Kiosk"
-        case .relationship: "Relationship"
-        case .section: "Section"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .address: "mappin.and.ellipse"
-        case .venue: "map"
-        case .building: "building.2"
-        case .footprint: "skew"
-        case .level: "square.stack.3d.up"
-        case .unit: "square.split.2x2"
-        case .opening: "door.left.hand.open"
-        case .amenity: "fork.knife"
-        case .anchor: "pin"
-        case .occupant: "person.crop.square"
-        case .detail: "line.diagonal"
-        case .fixture: "table.furniture"
-        case .geofence: "location.viewfinder"
-        case .kiosk: "display"
-        case .relationship: "point.3.connected.trianglepath.dotted"
-        case .section: "rectangle.3.group"
-        }
-    }
-}
-
-private extension IMDFAuthoringGeometry {
-    var title: String {
-        switch self {
-        case .point: "Point"
-        case .line: "Line"
-        case .polygon: "Polygon"
-        case .form: "Form"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .point: "smallcircle.filled.circle"
-        case .line: "line.diagonal"
-        case .polygon: "skew"
-        case .form: "list.bullet.rectangle"
-        }
-    }
-}
-
-private extension IMDFAuthoringReference {
-    var title: String {
-        switch self {
-        case .building: "Building"
-        case .level: "Level"
-        case .unit: "Unit"
-        case .anchor: "Anchor"
-        case .levelOrBuilding: "Level or building"
-        case .relationshipEndpoints: "Endpoints"
-        }
+#Preview("Map Editor") {
+    NavigationStack {
+        MapEditorView(project: IMDFProject(name: "IMDFlex Preview"))
     }
 }

@@ -17,6 +17,19 @@ This keeps the workflow map-first while letting the UI progressively disclose on
 
 ## Component Boundary
 
+### Presentation MVVM
+
+Map editor Presentation code should follow a strict MVVM boundary:
+
+- SwiftUI views render display-ready state and call ViewModel intents.
+- Child views receive the smallest needed values and intent closures, not the entire parent ViewModel, unless they represent a separate screen-level MVVM boundary.
+- ViewModels orchestrate user intents and combine focused Presentation state models.
+- Display descriptors own feature, geometry, reference, label, icon, and status mapping.
+- Focused state models, such as drawing drafts, should remain small and should not know about SwiftUI view layout.
+- Domain feature creation, persistence, export, and validation should stay behind future use cases, services, or coordinators.
+
+Do not add editor workflow orchestration directly to `MapEditorView` or its private child views. If a view needs to decide what a feature means, which requirement is ready, or which action should mutate state, move that decision into a ViewModel or descriptor first.
+
 ### DesignSystem
 
 DesignSystem should provide small, reusable primitives that do not know about IMDF feature semantics.
