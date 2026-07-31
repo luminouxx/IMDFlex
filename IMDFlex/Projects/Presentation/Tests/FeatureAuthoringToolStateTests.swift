@@ -112,12 +112,13 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
         // When
         sut.setCategorySelected(true)
         sut.satisfyReference(.level)
-        sut.addDraftPoint()
-        sut.addDraftPoint()
-        sut.addDraftPoint()
+        sut.appendDraftCoordinate(.fixture(longitude: 127.0, latitude: 37.0))
+        sut.appendDraftCoordinate(.fixture(longitude: 127.1, latitude: 37.0))
+        sut.appendDraftCoordinate(.fixture(longitude: 127.1, latitude: 37.1))
 
         // Then
         XCTAssertTrue(sut.canFinish)
+        XCTAssertEqual(sut.draftedCoordinates.map(\.geoJSONPosition), [[127.0, 37.0], [127.1, 37.0], [127.1, 37.1]])
     }
 
     func test_whenFormFeatureHasRequiredCategoryAndReference_thenStateCanFinishWithoutPoints() {
@@ -172,8 +173,8 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
         let sut = makeSUT(selectedFeature: .unit)
         sut.setCategorySelected(true)
         sut.satisfyReference(.level)
-        sut.addDraftPoint()
-        sut.addDraftPoint()
+        sut.appendDraftCoordinate(.fixture(longitude: 127.0, latitude: 37.0))
+        sut.appendDraftCoordinate(.fixture(longitude: 127.1, latitude: 37.0))
 
         // When
         sut.selectFeature(.amenity)
@@ -181,6 +182,7 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
         // Then
         XCTAssertEqual(sut.selectedFeature, .amenity)
         XCTAssertEqual(sut.draftedPointCount, 0)
+        XCTAssertEqual(sut.drawingDraft.geometry, .point)
         XCTAssertFalse(sut.hasSelectedCategory)
         XCTAssertTrue(sut.satisfiedReferences.isEmpty)
     }
@@ -190,7 +192,7 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
         let sut = makeSUT(selectedFeature: .opening)
         sut.setCategorySelected(true)
         sut.satisfyReference(.level)
-        sut.addDraftPoint()
+        sut.appendDraftCoordinate(.fixture())
 
         // When
         sut.cancel()
@@ -198,11 +200,39 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
         // Then
         XCTAssertEqual(sut.selectedFeature, .opening)
         XCTAssertEqual(sut.draftedPointCount, 0)
+        XCTAssertEqual(sut.drawingDraft.geometry, .line)
         XCTAssertFalse(sut.hasSelectedCategory)
         XCTAssertTrue(sut.satisfiedReferences.isEmpty)
     }
 
+    func test_whenAuthoringDraftCanFinish_thenFinishDrawingDraftReturnsDraftResult() throws {
+        // Given
+        let sut = makeSUT(selectedFeature: .opening)
+        let first = IMDFDraftCoordinate.fixture(longitude: 127.0, latitude: 37.0)
+        let second = IMDFDraftCoordinate.fixture(longitude: 127.1, latitude: 37.1)
+        sut.setCategorySelected(true)
+        sut.satisfyReference(.level)
+        sut.appendDraftCoordinate(first)
+        sut.appendDraftCoordinate(second)
+
+        // When
+        let result = try XCTUnwrap(sut.finishDrawingDraft())
+
+        // Then
+        XCTAssertEqual(result.geometry, .line)
+        XCTAssertEqual(result.coordinates, [first, second])
+    }
+
     private func makeSUT(selectedFeature: IMDFAuthoringFeature = .unit) -> FeatureAuthoringToolState {
         FeatureAuthoringToolState(selectedFeature: selectedFeature)
+    }
+}
+
+private extension IMDFDraftCoordinate {
+    static func fixture(
+        longitude: Double = 127.0276,
+        latitude: Double = 37.4979
+    ) -> Self {
+        .init(longitude: longitude, latitude: latitude)
     }
 }
