@@ -66,6 +66,7 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
 - Keep business logic testable outside SwiftUI views.
 - Place view logic in testable model/coordinator/service types rather than burying it in view bodies.
 - In Presentation, keep SwiftUI views thin. Views should read display-ready state from `@Observable` ViewModels and call ViewModel intents, not directly orchestrate editor workflow state.
+- Prefer passing the smallest display state and intent closures into child SwiftUI views. Do not pass an entire ViewModel into a child view unless that child is itself a routed screen or owns a distinct MVVM boundary.
 - Keep Presentation display descriptors/mappers outside SwiftUI view files when feature, geometry, reference, icon, label, status, or localization mapping is involved.
 - State types such as drawing drafts may model focused UI interaction state, but ViewModels should own cross-state orchestration and user intents.
 - Do not turn the product into only a feature-by-feature CRUD app. Keep the map-first IMDF authoring workflow central.

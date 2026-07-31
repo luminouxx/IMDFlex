@@ -22,6 +22,7 @@ This keeps the workflow map-first while letting the UI progressively disclose on
 Map editor Presentation code should follow a strict MVVM boundary:
 
 - SwiftUI views render display-ready state and call ViewModel intents.
+- Child views receive the smallest needed values and intent closures, not the entire parent ViewModel, unless they represent a separate screen-level MVVM boundary.
 - ViewModels orchestrate user intents and combine focused Presentation state models.
 - Display descriptors own feature, geometry, reference, label, icon, and status mapping.
 - Focused state models, such as drawing drafts, should remain small and should not know about SwiftUI view layout.

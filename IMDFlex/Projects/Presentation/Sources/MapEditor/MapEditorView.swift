@@ -4,18 +4,17 @@ import MapKit
 import SwiftUI
 
 public struct MapEditorView: View {
-    let project: IMDFProject
-
-    @State private var cameraPosition: MapCameraPosition = .automatic
-    @State private var viewModel = MapEditorViewModel()
+    @State private var viewModel: MapEditorViewModel
 
     public init(project: IMDFProject) {
-        self.project = project
+        self._viewModel = State(initialValue: MapEditorViewModel(project: project))
     }
 
     public var body: some View {
+        @Bindable var viewModel = viewModel
+
         ZStack {
-            Map(position: $cameraPosition)
+            Map(position: $viewModel.cameraPosition)
                 .mapStyle(.standard)
                 .ignoresSafeArea(edges: .bottom)
 
@@ -23,17 +22,39 @@ public struct MapEditorView: View {
                 HStack(alignment: .top, spacing: IMDFSpacing.md) {
                     Spacer(minLength: 0)
 
-                    AuthoringInspector(viewModel: viewModel)
+                    AuthoringInspector(
+                        selectedFeature: viewModel.selectedFeatureDescriptor,
+                        geometry: viewModel.geometryDescriptor,
+                        draftProgressText: viewModel.draftProgressText,
+                        draftStatus: viewModel.draftStatus,
+                        categoryRequirement: viewModel.categoryRequirement,
+                        referenceRequirement: viewModel.referenceRequirement,
+                        canAddDraftPoint: viewModel.canAddDraftPoint,
+                        canRemoveDraftPoint: viewModel.canRemoveDraftPoint,
+                        canFinishDraft: viewModel.canFinishDraft,
+                        onToggleCategorySelection: viewModel.toggleCategorySelection,
+                        onSatisfyRequiredReferences: viewModel.satisfyRequiredReferences,
+                        onAddDraftPoint: viewModel.addDraftPoint,
+                        onRemoveLastDraftPoint: viewModel.removeLastDraftPoint,
+                        onCancelDraft: viewModel.cancelDraft,
+                        onFinishDraft: {
+                            viewModel.finishDraft()
+                        }
+                    )
                         .frame(width: 300)
                 }
 
                 Spacer(minLength: 0)
 
-                AuthoringFeatureToolbar(viewModel: viewModel)
+                AuthoringFeatureToolbar(
+                    featureTools: viewModel.featureTools,
+                    selectedFeature: viewModel.selectedFeature,
+                    onSelectFeature: viewModel.selectFeature
+                )
             }
             .padding(IMDFSpacing.lg)
         }
-        .navigationTitle(project.name)
+        .navigationTitle(viewModel.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -50,19 +71,21 @@ public struct MapEditorView: View {
 }
 
 private struct AuthoringFeatureToolbar: View {
-    let viewModel: MapEditorViewModel
+    let featureTools: [IMDFAuthoringFeatureDisplayDescriptor]
+    let selectedFeature: IMDFAuthoringFeature
+    let onSelectFeature: (IMDFAuthoringFeature) -> Void
 
     var body: some View {
         IMDFPanel(role: .floating) {
             ScrollView(.horizontal) {
                 HStack(spacing: IMDFSpacing.sm) {
-                    ForEach(viewModel.featureTools) { feature in
+                    ForEach(featureTools) { feature in
                         IMDFToolButton(
                             title: feature.title,
                             systemImage: feature.systemImage,
-                            isSelected: viewModel.selectedFeature == feature.feature
+                            isSelected: selectedFeature == feature.feature
                         ) {
-                            viewModel.selectFeature(feature.feature)
+                            onSelectFeature(feature.feature)
                         }
                     }
                 }
@@ -73,46 +96,76 @@ private struct AuthoringFeatureToolbar: View {
 }
 
 private struct AuthoringInspector: View {
-    let viewModel: MapEditorViewModel
+    let selectedFeature: IMDFAuthoringFeatureDisplayDescriptor
+    let geometry: IMDFAuthoringGeometryDisplayDescriptor
+    let draftProgressText: String
+    let draftStatus: MapEditorDraftStatusDisplayState
+    let categoryRequirement: MapEditorRequirementDisplayState?
+    let referenceRequirement: MapEditorRequirementDisplayState
+    let canAddDraftPoint: Bool
+    let canRemoveDraftPoint: Bool
+    let canFinishDraft: Bool
+    let onToggleCategorySelection: () -> Void
+    let onSatisfyRequiredReferences: () -> Void
+    let onAddDraftPoint: () -> Void
+    let onRemoveLastDraftPoint: () -> Void
+    let onCancelDraft: () -> Void
+    let onFinishDraft: () -> Void
 
     var body: some View {
         IMDFPanel(role: .inspector) {
             VStack(alignment: .leading, spacing: IMDFSpacing.lg) {
-                IMDFInspectorSection(title: viewModel.selectedFeatureDescriptor.title) {
+                IMDFInspectorSection(title: selectedFeature.title) {
                     IMDFInspectorRow(
                         title: "Geometry",
-                        value: viewModel.geometryDescriptor.title,
-                        systemImage: viewModel.geometryDescriptor.systemImage
+                        value: geometry.title,
+                        systemImage: geometry.systemImage
                     )
 
                     IMDFInspectorRow(title: "Draft points", systemImage: "point.3.connected.trianglepath.dotted") {
-                        Text(viewModel.draftProgressText)
+                        Text(draftProgressText)
                     }
 
-                    IMDFInspectorRow(title: "Status", systemImage: viewModel.draftStatus.systemImage) {
+                    IMDFInspectorRow(title: "Status", systemImage: draftStatus.systemImage) {
                         IMDFStatusBadge(
-                            viewModel.draftStatus.title,
-                            systemImage: viewModel.draftStatus.systemImage,
-                            role: viewModel.draftStatus.isReady ? .success : .warning
+                            draftStatus.title,
+                            systemImage: draftStatus.systemImage,
+                            role: draftStatus.isReady ? .success : .warning
                         )
                     }
                 }
 
-                RequirementSection(viewModel: viewModel)
-                DraftControls(viewModel: viewModel)
+                RequirementSection(
+                    categoryRequirement: categoryRequirement,
+                    referenceRequirement: referenceRequirement,
+                    onToggleCategorySelection: onToggleCategorySelection,
+                    onSatisfyRequiredReferences: onSatisfyRequiredReferences
+                )
+                DraftControls(
+                    canAddDraftPoint: canAddDraftPoint,
+                    canRemoveDraftPoint: canRemoveDraftPoint,
+                    canFinishDraft: canFinishDraft,
+                    onAddDraftPoint: onAddDraftPoint,
+                    onRemoveLastDraftPoint: onRemoveLastDraftPoint,
+                    onCancelDraft: onCancelDraft,
+                    onFinishDraft: onFinishDraft
+                )
             }
         }
     }
 }
 
 private struct RequirementSection: View {
-    let viewModel: MapEditorViewModel
+    let categoryRequirement: MapEditorRequirementDisplayState?
+    let referenceRequirement: MapEditorRequirementDisplayState
+    let onToggleCategorySelection: () -> Void
+    let onSatisfyRequiredReferences: () -> Void
 
     var body: some View {
         IMDFInspectorSection(title: "Requirements") {
-            if let categoryRequirement = viewModel.categoryRequirement {
+            if let categoryRequirement {
                 Button {
-                    viewModel.toggleCategorySelection()
+                    onToggleCategorySelection()
                 } label: {
                     requirementRow(
                         state: categoryRequirement
@@ -121,13 +174,13 @@ private struct RequirementSection: View {
                 .buttonStyle(.plain)
             }
 
-            if viewModel.referenceRequirement.value == "None" {
-                requirementRow(state: viewModel.referenceRequirement)
+            if referenceRequirement.value == "None" {
+                requirementRow(state: referenceRequirement)
             } else {
                 Button {
-                    viewModel.satisfyRequiredReferences()
+                    onSatisfyRequiredReferences()
                 } label: {
-                    requirementRow(state: viewModel.referenceRequirement)
+                    requirementRow(state: referenceRequirement)
                 }
                 .buttonStyle(.plain)
             }
@@ -156,33 +209,45 @@ private struct RequirementSection: View {
 }
 
 private struct DraftControls: View {
-    let viewModel: MapEditorViewModel
+    let canAddDraftPoint: Bool
+    let canRemoveDraftPoint: Bool
+    let canFinishDraft: Bool
+    let onAddDraftPoint: () -> Void
+    let onRemoveLastDraftPoint: () -> Void
+    let onCancelDraft: () -> Void
+    let onFinishDraft: () -> Void
 
     var body: some View {
         HStack(spacing: IMDFSpacing.sm) {
             IMDFToolButton(title: "Add point", systemImage: "plus") {
-                viewModel.addDraftPoint()
+                onAddDraftPoint()
             }
-            .disabled(!viewModel.canAddDraftPoint)
+            .disabled(!canAddDraftPoint)
 
             IMDFToolButton(title: "Remove point", systemImage: "minus") {
-                viewModel.removeLastDraftPoint()
+                onRemoveLastDraftPoint()
             }
-            .disabled(!viewModel.canRemoveDraftPoint)
+            .disabled(!canRemoveDraftPoint)
 
             IMDFToolButton(title: "Cancel draft", systemImage: "xmark") {
-                viewModel.cancelDraft()
+                onCancelDraft()
             }
 
             IMDFToolButton(
                 title: "Finish draft",
                 systemImage: "checkmark",
-                isSelected: viewModel.canFinishDraft,
+                isSelected: canFinishDraft,
                 role: .primary
             ) {
-                viewModel.finishDraft()
+                onFinishDraft()
             }
-            .disabled(!viewModel.canFinishDraft)
+            .disabled(!canFinishDraft)
         }
+    }
+}
+
+#Preview("Map Editor") {
+    NavigationStack {
+        MapEditorView(project: IMDFProject(name: "IMDFlex Preview"))
     }
 }

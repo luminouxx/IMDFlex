@@ -1,4 +1,7 @@
+import Domain
+import MapKit
 import Observation
+import SwiftUI
 
 public struct MapEditorRequirementDisplayState: Equatable, Sendable {
     public let title: String
@@ -27,10 +30,23 @@ public struct MapEditorDraftStatusDisplayState: Equatable, Sendable {
 @MainActor
 @Observable
 public final class MapEditorViewModel {
+    public var cameraPosition: MapCameraPosition
+
+    private let project: IMDFProject
     private let authoringState: FeatureAuthoringToolState
 
-    public init(authoringState: FeatureAuthoringToolState = FeatureAuthoringToolState()) {
+    public init(
+        project: IMDFProject,
+        cameraPosition: MapCameraPosition = .automatic,
+        authoringState: FeatureAuthoringToolState = FeatureAuthoringToolState()
+    ) {
+        self.project = project
+        self.cameraPosition = cameraPosition
         self.authoringState = authoringState
+    }
+
+    public var navigationTitle: String {
+        project.name
     }
 
     public var featureTools: [IMDFAuthoringFeatureDisplayDescriptor] {

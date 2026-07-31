@@ -1,8 +1,20 @@
 import XCTest
 @testable import Presentation
+import Domain
 
 @MainActor
 final class MapEditorViewModelTests: XCTestCase {
+    func test_whenViewModelIsCreated_thenItExposesProjectNavigationTitle() {
+        // Given
+        let sut = makeSUT(project: .fixture(name: "Preview Mall"))
+
+        // When
+        let title = sut.navigationTitle
+
+        // Then
+        XCTAssertEqual(title, "Preview Mall")
+    }
+
     func test_whenViewModelIsCreated_thenItExposesDefaultUnitDisplayState() {
         // Given
         let sut = makeSUT()
@@ -120,7 +132,13 @@ final class MapEditorViewModelTests: XCTestCase {
         XCTAssertFalse(sut.canFinishDraft)
     }
 
-    private func makeSUT() -> MapEditorViewModel {
-        MapEditorViewModel()
+    private func makeSUT(project: IMDFProject = .fixture()) -> MapEditorViewModel {
+        MapEditorViewModel(project: project)
+    }
+}
+
+private extension IMDFProject {
+    static func fixture(name: String = "Test Project") -> Self {
+        .init(name: name)
     }
 }
