@@ -102,6 +102,7 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
 
         // Then
         XCTAssertFalse(sut.canFinish)
+        XCTAssertEqual(sut.remainingPointCount, 1)
     }
 
     func test_whenPolygonFeatureHasRequiredCategoryReferenceAndPoints_thenStateCanFinish() {
@@ -130,6 +131,40 @@ final class FeatureAuthoringToolStateTests: XCTestCase {
         // Then
         XCTAssertTrue(sut.canFinish)
         XCTAssertEqual(sut.draftedPointCount, 0)
+        XCTAssertEqual(sut.remainingPointCount, 0)
+    }
+
+    func test_whenFeatureRequiresReferences_thenMissingReferencesExposeOnlyUnsatisfiedReferences() {
+        // Given
+        let sut = makeSUT(selectedFeature: .footprint)
+
+        // When
+        let missingReferences = sut.missingReferences
+
+        // Then
+        XCTAssertEqual(missingReferences, [.building])
+    }
+
+    func test_whenRequiredReferencesAreSatisfied_thenMissingReferencesBecomeEmpty() {
+        // Given
+        let sut = makeSUT(selectedFeature: .relationship)
+
+        // When
+        sut.satisfyRequiredReferences()
+
+        // Then
+        XCTAssertTrue(sut.missingReferences.isEmpty)
+    }
+
+    func test_whenCategoryIsRequiredButNotSelected_thenCategoryIsNotSatisfied() {
+        // Given
+        let sut = makeSUT(selectedFeature: .amenity)
+
+        // When
+        let isCategorySatisfied = sut.isCategorySatisfied
+
+        // Then
+        XCTAssertFalse(isCategorySatisfied)
     }
 
     func test_whenFeatureSelectionChanges_thenDraftStateIsReset() {
