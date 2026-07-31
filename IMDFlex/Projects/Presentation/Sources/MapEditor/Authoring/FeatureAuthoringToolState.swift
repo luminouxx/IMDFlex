@@ -195,6 +195,18 @@ public final class FeatureAuthoringToolState {
         hasEnoughGeometry && hasRequiredCategory && hasRequiredReferences
     }
 
+    public var remainingPointCount: Int {
+        max(0, contract.geometry.minimumPointCount - draftedPointCount)
+    }
+
+    public var isCategorySatisfied: Bool {
+        hasRequiredCategory
+    }
+
+    public var missingReferences: [IMDFAuthoringReference] {
+        contract.requiredReferences.filter { !satisfiedReferences.contains($0) }
+    }
+
     public func selectFeature(_ feature: IMDFAuthoringFeature) {
         selectedFeature = feature
         resetDraft()
@@ -218,6 +230,10 @@ public final class FeatureAuthoringToolState {
 
     public func clearReference(_ reference: IMDFAuthoringReference) {
         satisfiedReferences.remove(reference)
+    }
+
+    public func satisfyRequiredReferences() {
+        satisfiedReferences.formUnion(contract.requiredReferences)
     }
 
     public func cancel() {
