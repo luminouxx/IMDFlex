@@ -1,126 +1,108 @@
 import SwiftUI
 
-public enum IMDFControlRole: Sendable {
-    case normal
-    case primary
-    case destructive
-}
-
 public struct IMDFToolButton: View {
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.imdfMotionMode) private var motionMode
+    @Environment(\.isEnabled) private var isEnabled
+
     private let title: String
     private let systemImage: String
-    private let isSelected: Bool
-    private let role: IMDFControlRole
     private let action: () -> Void
+    private var isSelected = false
+    private var role: IMDFButtonRole = .secondary
 
     public init(
-        title: String,
+        _ title: String,
         systemImage: String,
-        isSelected: Bool = false,
-        role: IMDFControlRole = .normal,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.systemImage = systemImage
-        self.isSelected = isSelected
-        self.role = role
         self.action = action
     }
 
     public var body: some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: IMDFIconSize.md, weight: .semibold))
-                .frame(width: 44, height: 44)
-                .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .background(backgroundColor)
-        .foregroundStyle(foregroundColor)
-        .overlay {
-            RoundedRectangle(cornerRadius: IMDFRadius.lg, style: .continuous)
-                .stroke(borderColor, lineWidth: isSelected ? 1.5 : 1)
-        }
-        .clipShape(.rect(cornerRadius: IMDFRadius.lg, style: .continuous))
-        .accessibilityLabel(title)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        Button(
+            title,
+            systemImage: systemImage,
+            role: role == .destructive ? .destructive : nil,
+            action: action
+        )
+            .labelStyle(.iconOnly)
+            .font(.system(size: IMDFIconSize.regular, weight: .semibold))
+            .frame(
+                minWidth: IMDFControlMetrics.minimumHitSize,
+                minHeight: IMDFControlMetrics.minimumHitSize
+            )
+            .buttonStyle(IMDFPressFeedbackStyle())
+            .background(backgroundStyle)
+            .foregroundStyle(foregroundStyle)
+            .overlay {
+                RoundedRectangle(cornerRadius: IMDFRadius.control)
+                    .stroke(borderStyle, lineWidth: isSelected ? 2 : 1)
+            }
+            .clipShape(.rect(cornerRadius: IMDFRadius.control))
+            .contentShape(.rect)
+            .opacity(isEnabled ? 1 : 0.38)
+            .animation(motionAnimation, value: isSelected)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
-    private var backgroundColor: Color {
+    public func selected(_ isSelected: Bool) -> Self {
+        var copy = self
+        copy.isSelected = isSelected
+        return copy
+    }
+
+    public func role(_ role: IMDFButtonRole) -> Self {
+        var copy = self
+        copy.role = role
+        return copy
+    }
+
+    private var backgroundStyle: Color {
         if isSelected {
-            return selectedColor
+            return role == .destructive ? IMDFColor.dangerFill : IMDFColor.accentFill
         }
 
-        return Color.primary.opacity(0.06)
+        return IMDFColor.neutralFill
     }
 
-    private var foregroundColor: Color {
+    private var foregroundStyle: Color {
         if isSelected {
             return .white
         }
 
         switch role {
-        case .normal: return .primary
         case .primary: return IMDFColor.accent
+        case .secondary: return .primary
         case .destructive: return IMDFColor.danger
         }
     }
 
-    private var borderColor: Color {
+    private var borderStyle: Color {
         if isSelected {
-            return selectedColor
+            return role == .destructive ? IMDFColor.danger : IMDFColor.accent
         }
 
         return IMDFColor.separator
     }
 
-    private var selectedColor: Color {
-        switch role {
-        case .normal, .primary: return IMDFColor.selection
-        case .destructive: return IMDFColor.danger
-        }
-    }
-}
-
-public struct IMDFButtonStyle: ButtonStyle {
-    private let role: IMDFControlRole
-
-    public init(role: IMDFControlRole = .primary) {
-        self.role = role
-    }
-
-    public func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body.weight(.semibold))
-            .padding(.horizontal, IMDFSpacing.lg)
-            .padding(.vertical, IMDFSpacing.md)
-            .background(backgroundColor.opacity(configuration.isPressed ? 0.82 : 1))
-            .foregroundStyle(.white)
-            .clipShape(.rect(cornerRadius: IMDFRadius.lg, style: .continuous))
-    }
-
-    private var backgroundColor: Color {
-        switch role {
-        case .normal, .primary: return IMDFColor.accent
-        case .destructive: return IMDFColor.danger
-        }
-    }
-}
-
-public extension ButtonStyle where Self == IMDFButtonStyle {
-    static var imdf: IMDFButtonStyle { IMDFButtonStyle() }
-
-    static func imdf(role: IMDFControlRole) -> IMDFButtonStyle {
-        IMDFButtonStyle(role: role)
+    private var motionAnimation: Animation? {
+        motionMode.allowsSpatialMotion(systemReduceMotion: systemReduceMotion)
+            ? .easeOut(duration: 0.12)
+            : nil
     }
 }
 
 #Preview("Tool Buttons") {
     IMDFPanel {
         HStack(spacing: IMDFSpacing.sm) {
-            IMDFToolButton(title: "Select", systemImage: "cursorarrow", isSelected: true) {}
-            IMDFToolButton(title: "Draw", systemImage: "pencil") {}
-            IMDFToolButton(title: "Delete", systemImage: "trash", role: .destructive) {}
+            IMDFToolButton("Select", systemImage: "cursorarrow") {}
+                .selected(true)
+            IMDFToolButton("Draw", systemImage: "pencil") {}
+            IMDFToolButton("Delete", systemImage: "trash") {}
+                .role(.destructive)
         }
     }
     .padding()

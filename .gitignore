@@ -160,3 +160,6 @@ xcuserdata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.toptal.com/developers/gitignore/api/fastlane,swift,swiftpackagemanager,macos,xcode
+
+# Local product, design, decision, and agent report workspace
+/LocalWorkspace/

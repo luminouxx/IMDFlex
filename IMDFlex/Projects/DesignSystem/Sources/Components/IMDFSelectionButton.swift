@@ -1,23 +1,16 @@
 import SwiftUI
 
 public struct IMDFSelectionButton: View {
-    private let title: String
-    private let subtitle: String?
-    private let systemImage: String?
-    private let isSelected: Bool
-    private let action: () -> Void
+    @Environment(\.isEnabled) private var isEnabled
 
-    public init(
-        title: String,
-        subtitle: String? = nil,
-        systemImage: String? = nil,
-        isSelected: Bool = false,
-        action: @escaping () -> Void
-    ) {
+    private let title: String
+    private let action: () -> Void
+    private var subtitle: String?
+    private var systemImage: String?
+    private var isSelected = false
+
+    public init(_ title: String, action: @escaping () -> Void) {
         self.title = title
-        self.subtitle = subtitle
-        self.systemImage = systemImage
-        self.isSelected = isSelected
         self.action = action
     }
 
@@ -26,62 +19,80 @@ public struct IMDFSelectionButton: View {
             HStack(spacing: IMDFSpacing.sm) {
                 if let systemImage {
                     Image(systemName: systemImage)
-                        .font(.system(size: IMDFIconSize.sm, weight: .semibold))
-                        .frame(width: IMDFIconSize.lg, height: IMDFIconSize.lg)
+                        .font(.system(size: IMDFIconSize.small, weight: .semibold))
+                        .frame(width: IMDFIconSize.large, height: IMDFIconSize.large)
+                        .accessibilityHidden(true)
                 }
 
                 VStack(alignment: .leading, spacing: IMDFSpacing.xxs) {
                     Text(title)
                         .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
+                        .lineLimit(2)
 
                     if let subtitle {
                         Text(subtitle)
                             .font(.caption)
-                            .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
-                            .lineLimit(1)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
                     }
                 }
 
                 Spacer(minLength: IMDFSpacing.sm)
 
                 if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: IMDFIconSize.sm, weight: .bold))
+                    Image(systemName: DesignSystemSymbol.selected)
+                        .font(.system(size: IMDFIconSize.small, weight: .bold))
+                        .accessibilityHidden(true)
                 }
             }
             .frame(minHeight: 44)
             .padding(.horizontal, IMDFSpacing.md)
-            .padding(.vertical, IMDFSpacing.sm)
+            .frame(minHeight: IMDFControlMetrics.minimumHitSize)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
-        .background(isSelected ? IMDFColor.selection : Color.primary.opacity(0.06))
-        .foregroundStyle(isSelected ? .white : .primary)
+        .buttonStyle(IMDFPressFeedbackStyle())
+        .background(isSelected ? IMDFColor.selectedFill : IMDFColor.neutralFill)
+        .foregroundStyle(.primary)
         .overlay {
-            RoundedRectangle(cornerRadius: IMDFRadius.lg, style: .continuous)
-                .stroke(isSelected ? IMDFColor.selection : IMDFColor.separator, lineWidth: 1)
+            RoundedRectangle(cornerRadius: IMDFRadius.control)
+                .stroke(isSelected ? IMDFColor.selection : IMDFColor.separator, lineWidth: isSelected ? 2 : 1)
         }
-        .clipShape(.rect(cornerRadius: IMDFRadius.lg, style: .continuous))
+        .clipShape(.rect(cornerRadius: IMDFRadius.control))
+        .opacity(isEnabled ? 1 : 0.38)
         .accessibilityElement(children: .combine)
+        .accessibilityValue(isSelected ? DesignSystemText.selected : DesignSystemText.notSelected)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    public func subtitle(_ subtitle: String?) -> Self {
+        var copy = self
+        copy.subtitle = subtitle
+        return copy
+    }
+
+    public func systemImage(_ systemImage: String?) -> Self {
+        var copy = self
+        copy.systemImage = systemImage
+        return copy
+    }
+
+    public func selected(_ isSelected: Bool) -> Self {
+        var copy = self
+        copy.isSelected = isSelected
+        return copy
     }
 }
 
 #Preview("Selection Buttons") {
     VStack(spacing: IMDFSpacing.sm) {
-        IMDFSelectionButton(
-            title: "Unit",
-            subtitle: "Polygon",
-            systemImage: "square.split.2x2",
-            isSelected: true
-        ) {}
+        IMDFSelectionButton("Unit") {}
+            .subtitle("Polygon")
+            .systemImage("square.split.2x2")
+            .selected(true)
 
-        IMDFSelectionButton(
-            title: "Opening",
-            subtitle: "Line",
-            systemImage: "door.left.hand.open"
-        ) {}
+        IMDFSelectionButton("Opening") {}
+            .subtitle("Line")
+            .systemImage("door.left.hand.open")
     }
     .padding()
 }

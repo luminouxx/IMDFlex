@@ -1,20 +1,13 @@
 import SwiftUI
 
-public enum IMDFPanelStyleRole: Sendable {
-    case floating
-    case inspector
-    case status
-}
-
 public struct IMDFPanel<Content: View>: View {
-    private let role: IMDFPanelStyleRole
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.imdfLayoutMode) private var layoutMode
+    @Environment(\.imdfPanelStyle) private var style
+
     private let content: Content
 
-    public init(
-        role: IMDFPanelStyleRole = .floating,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.role = role
+    public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
@@ -23,15 +16,15 @@ public struct IMDFPanel<Content: View>: View {
             .padding(padding)
             .background(backgroundStyle)
             .overlay {
-                RoundedRectangle(cornerRadius: IMDFRadius.lg, style: .continuous)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(IMDFColor.separator, lineWidth: 1)
             }
-            .clipShape(.rect(cornerRadius: IMDFRadius.lg, style: .continuous))
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .shadow(color: shadowColor, radius: shadowRadius, y: shadowYOffset)
     }
 
     private var padding: CGFloat {
-        switch role {
+        switch style {
         case .floating: IMDFSpacing.sm
         case .inspector: IMDFSpacing.lg
         case .status: IMDFSpacing.md
@@ -39,18 +32,22 @@ public struct IMDFPanel<Content: View>: View {
     }
 
     private var backgroundStyle: AnyShapeStyle {
-        switch role {
+        if reduceTransparency {
+            return AnyShapeStyle(.background)
+        }
+
+        switch style {
         case .floating:
-            AnyShapeStyle(.ultraThinMaterial)
+            return AnyShapeStyle(.ultraThinMaterial)
         case .inspector:
-            AnyShapeStyle(.regularMaterial)
+            return AnyShapeStyle(.regularMaterial)
         case .status:
-            AnyShapeStyle(.thinMaterial)
+            return AnyShapeStyle(.thinMaterial)
         }
     }
 
     private var shadowColor: Color {
-        switch role {
+        switch style {
         case .floating: Color.black.opacity(0.14)
         case .inspector: Color.black.opacity(0.10)
         case .status: Color.black.opacity(0.08)
@@ -58,7 +55,7 @@ public struct IMDFPanel<Content: View>: View {
     }
 
     private var shadowRadius: CGFloat {
-        switch role {
+        switch style {
         case .floating: 12
         case .inspector: 8
         case .status: 6
@@ -66,21 +63,25 @@ public struct IMDFPanel<Content: View>: View {
     }
 
     private var shadowYOffset: CGFloat {
-        switch role {
+        switch style {
         case .floating: 6
         case .inspector: 4
         case .status: 3
         }
     }
+
+    private var cornerRadius: CGFloat {
+        layoutMode == .compact ? IMDFRadius.compactPanel : IMDFRadius.panel
+    }
 }
 
 #Preview("Panels") {
     VStack(spacing: IMDFSpacing.lg) {
-        IMDFPanel(role: .floating) {
+        IMDFPanel {
             Text("Floating Toolbar")
         }
 
-        IMDFPanel(role: .inspector) {
+        IMDFPanel {
             VStack(alignment: .leading, spacing: IMDFSpacing.sm) {
                 Text("Inspector")
                     .font(IMDFFont.panelTitle)
@@ -89,10 +90,12 @@ public struct IMDFPanel<Content: View>: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .imdfPanelStyle(.inspector)
 
-        IMDFPanel(role: .status) {
-            IMDFStatusBadge("Preflight Ready", systemImage: "checkmark.circle", role: .success)
+        IMDFPanel {
+            IMDFStatusBadge("Preflight Ready").status(.success)
         }
+        .imdfPanelStyle(.status)
     }
     .padding()
 }

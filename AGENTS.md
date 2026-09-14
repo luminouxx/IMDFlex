@@ -80,6 +80,8 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
 - Avoid old-style GCD such as `DispatchQueue.main.async`; use Swift concurrency.
 - Filter user-facing text with `localizedStandardContains()` rather than plain `contains()`.
 - Prefer Swift-native APIs where practical.
+- Keep user-facing copy in the owning module's String Catalog and expose it through a typed text namespace. Do not place reusable interface copy directly in SwiftUI view bodies.
+- Keep localization keys, SF Symbol names, IMDF schema raw values, and persistence identifiers in separate namespaces; they are different contracts even when they are all represented as strings.
 
 ## SwiftUI
 
@@ -177,6 +179,13 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
 - Record meaningful migration decisions in `docs/`.
 - Keep `docs/IMDF-Generator-migration.md` updated when moving concepts from IMDF-Generator into IMDFlex.
 - Do not overwrite IMDFlex with IMDF-Generator. Port concepts deliberately into the existing module structure.
+
+## Local Working Documentation
+
+- Store generated reports, screenshots, design explorations, planning material, and working decision logs under `LocalWorkspace/`. This directory is local-only and ignored by Git.
+- Binding implementation contracts that every clone needs may remain in `docs/`; do not place session reports or generated visual assets there.
+- Important local decisions live in `LocalWorkspace/decisions/important/`; routine notes live in `LocalWorkspace/decisions/routine/`.
+- Record the typed String Catalog policy in `LocalWorkspace/decisions/important/string-resource-ownership.md` and consult it before adding user-facing copy.
 
 ## Safety
 

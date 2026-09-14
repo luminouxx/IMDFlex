@@ -1,23 +1,25 @@
 # DesignSystem
 
-Shared UI components and design tokens for the hybrid IMDFlex editor style.
+Shared SwiftUI tokens and components for the map-first IMDFlex editor.
 
 ## Structure
 
 ```
 Sources/
-├── Components/    # Reusable views (tool buttons, badges, panels, empty states)
-└── Tokens/        # Color, typography, spacing, radius, and icon tokens
+├── Components/    # Focused reusable views
+├── Styles/        # Small visual presets and semantic roles
+└── Tokens/        # Color, typography, spacing, layout, motion, and metrics
 ```
 
 ## Guidelines
 
-- Components should be generic and reusable
-- Define all colors and styles as static properties
-- No business logic in this module
-- Keep editor controls stable in size so selection state does not shift layout
-- Prefer semantic roles over feature-specific component names
-- Prefer small composable components over option-heavy components
+- Keep initializers limited to required content and actions.
+- Add optional presentation one concern at a time with focused modifiers.
+- Put shared visual scope in Environment; keep workflow state in Presentation.
+- Prefer native SwiftUI controls and semantic text styles.
+- Every interactive control must provide at least a 44×44 pt hit region.
+- Keep editor controls stable in size so state changes do not shift layout.
+- Never import Domain or Data into this module.
 
 ## Dependencies
 
@@ -39,35 +41,64 @@ Text("Hello")
     .foregroundStyle(Color.imdfPrimary)
 ```
 
+### Primary and secondary actions
+
+```swift
+Button("Create feature", systemImage: "plus", action: createFeature)
+    .buttonStyle(.imdfPrimary)
+
+Button("Cancel", action: cancel)
+    .buttonStyle(.imdfSecondary)
+
+Button("Delete feature", systemImage: "trash", role: .destructive, action: deleteFeature)
+    .buttonStyle(.imdfDestructive)
+```
+
 ### Tool Button
 
 ```swift
-IMDFToolButton(
-    title: "Unit",
-    systemImage: "square.split.2x2",
-    isSelected: true
-) {}
+IMDFToolButton("Unit", systemImage: "square.split.2x2", action: selectUnit)
+    .selected(selectedFeature == .unit)
 ```
-
-`IMDFToolButton` is icon-only by default. Add label-capable variants later when a real editor layout needs them.
 
 ### Status Badge
 
 ```swift
-IMDFStatusBadge("3 Issues", systemImage: "exclamationmark.triangle", role: .warning)
+IMDFStatusBadge("3 Issues")
+    .status(.warning)
 ```
 
 ### Panel
 
 ```swift
-IMDFPanel(role: .inspector) {
+IMDFPanel {
     Text("Inspector")
 }
+.imdfPanelStyle(.inspector)
 ```
 
 `IMDFPanel` is only a surface container. Header, footer, loading, and inspector-specific behavior should be composed by higher-level components.
 
-## ⚠️ Rules
+### Field
+
+```swift
+IMDFField("Name", text: $name)
+    .placeholder("Feature name")
+    .supportingText("Shown to map users")
+
+IMDFField("Level reference", text: .constant(levelID))
+    .readOnly()
+```
+
+### Responsive and motion scope
+
+```swift
+EditorRoot()
+    .imdfLayoutMode(.intermediate)
+    .imdfMotionMode(.reduced)
+```
+
+## Rules
 
 - **DO NOT** import Domain or Data
 - **DO NOT** include app-specific or business logic
@@ -77,9 +108,9 @@ IMDFPanel(role: .inspector) {
 ## Contributing
 
 When modifying this module:
-1. Add SwiftUI Preview for every new component
-2. Add usage example to this README
-3. Document public APIs with DocC comments
-4. Ensure components work in both light and dark mode
+1. Add a SwiftUI Preview for visual components.
+2. Add or update the usage example in this README.
+3. Verify light/dark appearance, Dynamic Type, Reduce Motion, and Reduce Transparency.
+4. Add tests for pure contracts, appearance-aware semantic colors, and stable metrics; prefer build verification for view rendering until snapshot testing is approved.
 
 See `docs/design-system-foundation.md` for the product-level design direction.
