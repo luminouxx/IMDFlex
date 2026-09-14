@@ -15,7 +15,10 @@ public struct IMDFInspectorActionRow: View {
     public var body: some View {
         Button(action: action) {
             HStack(spacing: IMDFSpacing.sm) {
-                Image(systemName: systemImage ?? (isComplete ? "checkmark.circle.fill" : "circle"))
+                Image(
+                    systemName: systemImage
+                        ?? (isComplete ? DesignSystemSymbol.success : DesignSystemSymbol.incomplete)
+                )
                     .font(.system(size: IMDFIconSize.small, weight: .semibold))
                     .foregroundStyle(isComplete ? IMDFColor.success : .secondary)
                     .accessibilityHidden(true)
@@ -39,7 +42,7 @@ public struct IMDFInspectorActionRow: View {
         }
         .buttonStyle(IMDFPressFeedbackStyle())
         .accessibilityElement(children: .combine)
-        .accessibilityValue(isComplete ? "Complete" : "Action required")
+        .accessibilityValue(isComplete ? DesignSystemText.complete : DesignSystemText.actionRequired)
     }
 
     public func value(_ value: String?) -> Self {

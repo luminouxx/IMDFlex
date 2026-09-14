@@ -36,9 +36,9 @@ public struct IMDFField: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityLabel(title)
                         .accessibilityValue(readOnlyDisplayText)
-                        .accessibilityHint("Read only")
+                        .accessibilityHint(DesignSystemText.readOnly)
 
-                    Image(systemName: "lock.fill")
+                    Image(systemName: DesignSystemSymbol.lock)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .accessibilityHidden(true)
@@ -60,7 +60,7 @@ public struct IMDFField: View {
             .opacity(isEnabled ? 1 : 0.38)
 
             if let errorMessage {
-                Label(errorMessage, systemImage: "exclamationmark.circle.fill")
+                Label(errorMessage, systemImage: DesignSystemSymbol.error)
                     .font(IMDFFont.supporting)
                     .foregroundStyle(IMDFColor.danger)
             } else if let supportingText {

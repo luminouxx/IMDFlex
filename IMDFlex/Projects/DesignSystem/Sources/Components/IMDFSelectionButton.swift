@@ -40,7 +40,7 @@ public struct IMDFSelectionButton: View {
                 Spacer(minLength: IMDFSpacing.sm)
 
                 if isSelected {
-                    Image(systemName: "checkmark")
+                    Image(systemName: DesignSystemSymbol.selected)
                         .font(.system(size: IMDFIconSize.small, weight: .bold))
                         .accessibilityHidden(true)
                 }
@@ -60,7 +60,7 @@ public struct IMDFSelectionButton: View {
         .clipShape(.rect(cornerRadius: IMDFRadius.control))
         .opacity(isEnabled ? 1 : 0.38)
         .accessibilityElement(children: .combine)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityValue(isSelected ? DesignSystemText.selected : DesignSystemText.notSelected)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 

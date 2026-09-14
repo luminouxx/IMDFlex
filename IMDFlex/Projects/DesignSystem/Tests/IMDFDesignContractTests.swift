@@ -194,6 +194,29 @@ final class IMDFDesignContractTests: XCTestCase {
         XCTAssertTrue(resolvedPairs.allSatisfy { $0 != $1 })
     }
 
+    func test_whenAccessibilityCopyIsResolved_thenCatalogKeysAreNotExposedToUsers() {
+        // Given
+        let values = [
+            DesignSystemText.readOnly,
+            DesignSystemText.complete,
+            DesignSystemText.actionRequired,
+            DesignSystemText.selected,
+            DesignSystemText.notSelected,
+            DesignSystemText.information,
+            DesignSystemText.success,
+            DesignSystemText.warning,
+            DesignSystemText.error,
+        ]
+
+        // When
+        let unresolvedValues = values.filter {
+            $0.isEmpty || $0.hasPrefix("designSystem.")
+        }
+
+        // Then
+        XCTAssertTrue(unresolvedValues.isEmpty)
+    }
+
     private func resolvedComponents(
         of color: Color,
         traits: UITraitCollection

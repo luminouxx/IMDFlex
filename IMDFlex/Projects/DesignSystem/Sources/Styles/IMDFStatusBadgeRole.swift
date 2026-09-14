@@ -18,21 +18,20 @@ public enum IMDFStatusBadgeRole: Equatable, Sendable {
 
     var systemImage: String {
         switch self {
-        case .info: "info.circle.fill"
-        case .success: "checkmark.circle.fill"
-        case .warning: "exclamationmark.triangle.fill"
-        case .error: "xmark.octagon.fill"
-        case .selected: "checkmark.circle.fill"
+        case .info: DesignSystemSymbol.information
+        case .success, .selected: DesignSystemSymbol.success
+        case .warning: DesignSystemSymbol.warning
+        case .error: DesignSystemSymbol.failure
         }
     }
 
     var accessibilityValue: String {
         switch self {
-        case .info: "Information"
-        case .success: "Success"
-        case .warning: "Warning"
-        case .error: "Error"
-        case .selected: "Selected"
+        case .info: DesignSystemText.information
+        case .success: DesignSystemText.success
+        case .warning: DesignSystemText.warning
+        case .error: DesignSystemText.error
+        case .selected: DesignSystemText.selected
         }
     }
 }
