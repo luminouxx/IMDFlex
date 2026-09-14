@@ -30,6 +30,7 @@
 ## Source Control Record
 
 - Issue: [#39 — feat: establish progressive design system components](https://github.com/luminouxx/IMDFlex/issues/39)
+- Pull request: [#40 — feat: establish progressive design system components](https://github.com/luminouxx/IMDFlex/pull/40)
 - Branch: `feat/39-progressive-design-system-components`
 - Foundation commit: `6442df5` — `feat: establish progressive design system foundations`
 - Presentation integration commit: `0affb34` — `refactor: adopt progressive shared components`
