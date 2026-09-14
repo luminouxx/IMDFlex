@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IMDFlex Lo-Fi 사용성 테스트 키트</title>
+  <style>
+    :root { --ink:#17212b; --muted:#67737e; --line:#d8e0e4; --paper:#fff; --soft:#f3f6f7; --accent:#315f68; --accent-soft:#dcebed; --danger:#9a3c36; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#edf1f2; font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",sans-serif; line-height:1.6; }
+    .page { width:min(1120px,calc(100% - 32px)); margin:32px auto; background:var(--paper); border:1px solid var(--line); border-radius:20px; overflow:hidden; box-shadow:0 16px 44px rgba(23,33,43,.08); }
+    header { padding:48px; background:#18383e; color:white; }
+    header h1 { margin:0; font-size:36px; line-height:1.25; }
+    header p { margin:10px 0 0; color:#c6d8db; }
+    nav { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+    nav a { color:white; text-decoration:none; border:1px solid #668087; border-radius:999px; padding:8px 12px; }
+    section { padding:36px 48px; border-top:1px solid var(--line); }
+    h2 { margin:0 0 20px; font-size:24px; }
+    h3 { margin:0 0 12px; font-size:18px; }
+    p { margin:0 0 14px; }
+    a { color:var(--accent); }
+    .meta,.tasks { display:grid; gap:12px; }
+    .meta { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .card { border:1px solid var(--line); border-radius:12px; padding:18px; background:var(--soft); }
+    .card strong { display:block; color:var(--accent); font-size:22px; }
+    .task { border:1px solid var(--line); border-radius:14px; padding:24px; }
+    .task-head { display:flex; gap:12px; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+    .tag { flex:none; padding:4px 8px; border-radius:999px; background:var(--accent-soft); color:#214a52; font-size:13px; font-weight:700; }
+    .say { margin:14px 0; padding:14px 16px; border-left:4px solid var(--accent); background:var(--soft); }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th,td { padding:10px 12px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--soft); }
+    .danger { color:var(--danger); font-weight:700; }
+    .blank { height:44px; }
+    ul { margin:0; padding-left:22px; }
+    li + li { margin-top:6px; }
+    footer { padding:28px 48px; color:var(--muted); background:var(--soft); }
+    @media (max-width:760px) { header,section,footer { padding:28px 24px; } header h1 { font-size:28px; } .meta { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media print { body { background:white; } .page { width:100%; margin:0; border:0; border-radius:0; box-shadow:none; } nav { display:none; } section { break-inside:avoid; } .task { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <h1>IMDFlex Lo-Fi 사용성 테스트 키트</h1>
+    <p>Agent Pilot 보정판 · 진행자 스크립트, 6개 과업, 판정 기준, 관찰 기록지</p>
+    <nav><a href="#overview">개요</a><a href="#tasks">과업</a><a href="#score">판정</a><a href="#sheet">기록지</a></nav>
+  </header>
+
+  <section id="overview">
+    <h2>테스트 개요</h2>
+    <div class="meta">
+      <div class="card"><strong>5명</strong>목표 사용자</div>
+      <div class="card"><strong>75분</strong>첫 Human Pilot</div>
+      <div class="card"><strong>6개</strong>핵심 과업</div>
+      <div class="card"><strong>iPad</strong>1차 테스트</div>
+    </div>
+    <h3 style="margin-top:28px">진행자 시작 문구</h3>
+    <p class="say">오늘은 여러분을 평가하는 것이 아니라 제품을 평가합니다. 화면에서 무엇을 기대하는지, 왜 특정 항목을 선택하는지를 계속 말해주세요. 실제 데이터는 저장되거나 Apple에 제출되지 않습니다.</p>
+    <p><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=51-2">Figma Prototype 열기</a></p>
+  </section>
+
+  <section id="tasks">
+    <h2>과업 시나리오</h2>
+    <div class="tasks">
+      <article class="task">
+        <div class="task-head"><div><h3>T1. 새 프로젝트와 공간 구조</h3><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=51-4">HOME-01에서 시작</a></div><span class="tag">8분</span></div>
+        <p class="say">“평면도를 등록할 수 있는 상태까지 전시장 프로젝트의 공간 구조를 준비해 주세요.”</p>
+        <p>성공: 새 프로젝트로 진입하고 주소·프로젝트 이름·A동·1층·2층과 각각의 공간 경계를 확인한 뒤 평면도 허브에 도달한다.</p>
+      </article>
+      <article class="task">
+        <div class="task-head"><div><h3>T2. 평면도 등록과 정렬</h3><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=140-139">FLOOR-01P에서 시작</a></div><span class="tag">6분</span></div>
+        <p class="say">“A동 1층 PDF를 등록하고, 지도와 정렬이 완료된 상태로 만들어 주세요.”</p>
+        <p>성공: 올바른 Level·PDF 페이지를 선택하고 Alignment Result를 적용한다.</p>
+      </article>
+      <article class="task">
+        <div class="task-head"><div><h3>T3. 공간과 출입구 작성</h3><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=51-19">AUTHOR-01에서 시작</a></div><span class="tag">10분</span></div>
+        <p class="say">“중앙 홀 옆에 새 공간을 만들고, 중앙 홀로 통하는 출입구까지 작성해 주세요.”</p>
+        <p>T3A Unit, T3B Opening, T3C 경계 오류를 독립 상태로 연다. <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=93-5">T3C 오류 상태</a> · <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=138-2">T3B 성공 종료</a></p>
+      </article>
+      <article class="task">
+        <div class="task-head"><div><h3>T4. 오류 수정과 재검사</h3><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=51-25">REVIEW-01에서 시작</a></div><span class="tag">7분</span></div>
+        <p class="say">“가장 먼저 처리해야 한다고 판단한 문제를 해결하고, 현재 남은 문제가 무엇인지 확인해 주세요.”</p>
+        <p>성공: 위치 확인 → 수정 시작 → Geometry 수정 → 재검사 → 해결 배너와 남은 문제를 이해한다.</p>
+      </article>
+      <article class="task">
+        <div class="task-head"><div><h3>T5. 내보내기 상태별 판단</h3><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=51-31">EXPORT-01에서 시작</a></div><span class="tag">10분</span></div>
+        <p class="say">오류 차단, 경고 확인, 검토용 ZIP, ZIP 실패를 각각 독립된 시작 상태로 제시한다. 상태 전환 시간은 제외한다.</p>
+        <p>성공: T5A 오류는 제출 차단, T5B 경고는 확인 후 진행, T5C 검토용은 제출용과 분리, T5D 실패는 재시도·위치 변경으로 복구한다.</p>
+        <p><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=89-2">T5A 차단</a> · <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=89-3">T5B 경고</a> · <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=89-4">T5C 검토용</a> · <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=89-5">T5D 실패</a></p>
+      </article>
+      <article class="task">
+        <div class="task-head"><div><h3>T6. 도면 교체 후 작업 계속</h3><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=131-160">FLOOR-07에서 시작</a></div><span class="tag">5분</span></div>
+        <p class="say">“기존 작업을 보존하면서 새 도면으로 교체하고, 다음에 무엇을 검토해야 하는지 확인해 주세요.”</p>
+        <p>성공: 영향을 먼저 예측하고 교체 → 재정렬 → Review Required → 영향받은 Geometry 검토 화면까지 이동한다.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="score">
+    <h2>판정 기준</h2>
+    <table>
+      <thead><tr><th>점수</th><th>의미</th></tr></thead>
+      <tbody><tr><td>2</td><td>힌트 없이 목표 완료</td></tr><tr><td>1</td><td>약한·강한 힌트 후 완료</td></tr><tr><td>0</td><td>미완료, 잘못된 결과, 진행자 대행</td></tr></tbody>
+    </table>
+    <h3 style="margin-top:28px">Round 1 통과선</h3>
+    <ul>
+      <li>T2~T5 독립 성공률 각각 80% 이상</li>
+      <li>전체 과업 완료율 85% 이상</li>
+      <li>과업 후 난이도 SEQ 중앙값 5/7 이상</li>
+      <li>동일 Critical Error 유형은 0~1명</li>
+      <li class="danger">Preflight와 Apple IMDF Validator를 혼동한 참가자 0명</li>
+    </ul>
+  </section>
+
+  <section id="sheet">
+    <h2>참가자 관찰 기록지</h2>
+    <table>
+      <tbody>
+        <tr><th>참가자 ID</th><td></td><th>날짜</th><td></td></tr>
+        <tr><th>기기</th><td>iPad / Mac</td><th>IMDF 경험</th><td>입문 / 중간 / 전문</td></tr>
+        <tr><th>진행자</th><td></td><th>관찰자</th><td></td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:28px">과업 결과</h3>
+    <table>
+      <thead><tr><th>과업</th><th>0·1·2</th><th>시간</th><th>힌트</th><th>SEQ</th><th>Critical Error·관찰</th></tr></thead>
+      <tbody>
+        <tr class="blank"><td>T1 프로젝트·공간</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td>T2 평면도·정렬</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td>T3A Unit / B Opening / C 경계</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td>T4 오류·재검사</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td>T5A 차단 / B 경고 / C 검토용 / D 실패</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td>T6 도면 교체</td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:28px">행동 기록</h3>
+    <table>
+      <thead><tr><th>시각</th><th>Screen ID</th><th>첫 행동·경로 이탈·발언</th><th>기대와 실제 차이</th><th>심각도</th></tr></thead>
+      <tbody>
+        <tr class="blank"><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="blank"><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>상세 진행 지침과 질문은 12-usability-test-plan.md, 복제 가능한 기록지는 13-usability-observation-sheet.md를 사용하세요.</footer>
+</main>
+</body>
+</html>

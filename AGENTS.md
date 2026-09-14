@@ -178,6 +178,17 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
 - Keep `docs/IMDF-Generator-migration.md` updated when moving concepts from IMDF-Generator into IMDFlex.
 - Do not overwrite IMDFlex with IMDF-Generator. Port concepts deliberately into the existing module structure.
 
+## Important Documentation
+
+- Start with `docs/README.md` for the current product, design, engineering, marketing, and report index.
+- Binding decisions live in `docs/decisions/important/`; routine and reversible implementation notes live in `docs/decisions/routine/`.
+- For every user-requested implementation session, update a routine record. Create or update an important decision record when a choice changes product direction, architecture, schema, design-system contracts, or another hard-to-reverse boundary.
+- Preserve document status when reorganizing files. A move must not turn a historical PASS, HOLD, draft, or unverified record into a current approval.
+- Read `docs/decisions/important/0001-progressive-design-system-api.md` before adding DesignSystem component parameters or style presets.
+- Use `docs/design-system-foundation.md` as the current SwiftUI design-system contract.
+- Use `docs/testing-strategy.md` for tests and `docs/editor-shell-foundation.md`, `docs/feature-authoring-tool-state.md`, and `docs/drawing-draft-state.md` for editor boundaries.
+- Use `docs/imdf-schema-gap.md`, `docs/imdf-category-catalog.md`, and `docs/IMDF-Generator-migration.md` for IMDF implementation decisions.
+
 ## Safety
 
 - Do not revert user changes unless explicitly asked.

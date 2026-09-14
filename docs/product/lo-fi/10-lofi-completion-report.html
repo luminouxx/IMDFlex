@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IMDFlex Lo-Fi Prototype 완료 보고서</title>
+  <style>
+    :root { color-scheme: light; --ink:#17212b; --muted:#64707d; --line:#d9e0e6; --soft:#f4f7f8; --accent:#315f68; --ok:#2f6b4f; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#eef2f3; color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",sans-serif; line-height:1.65; }
+    main { width:min(1080px,calc(100% - 32px)); margin:32px auto; background:white; border:1px solid var(--line); border-radius:20px; overflow:hidden; box-shadow:0 12px 40px rgba(23,33,43,.08); }
+    header { padding:48px; background:#18383e; color:white; }
+    header p { margin:8px 0 0; color:#c9d8db; }
+    section { padding:36px 48px; border-top:1px solid var(--line); }
+    h1 { margin:0; font-size:36px; line-height:1.25; }
+    h2 { margin:0 0 20px; font-size:24px; }
+    h3 { margin:28px 0 12px; font-size:18px; }
+    p { margin:0 0 16px; }
+    a { color:var(--accent); }
+    .status { display:inline-block; margin-top:20px; padding:8px 12px; border-radius:999px; background:#d8eee3; color:#174b35; font-weight:700; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .metric { padding:20px; background:var(--soft); border:1px solid var(--line); border-radius:12px; }
+    .metric strong { display:block; font-size:28px; color:var(--accent); }
+    .metric span { color:var(--muted); font-size:14px; }
+    table { width:100%; border-collapse:collapse; font-size:15px; }
+    th,td { padding:12px 14px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--soft); }
+    .pass { color:var(--ok); font-weight:700; }
+    .flow { padding:20px; background:#17212b; color:#eef4f5; border-radius:12px; white-space:pre-wrap; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    ul { margin:0; padding-left:22px; }
+    li + li { margin-top:8px; }
+    .note { padding:16px 20px; border-left:4px solid var(--accent); background:var(--soft); }
+    footer { padding:28px 48px; background:var(--soft); color:var(--muted); }
+    @media (max-width:760px) { header,section,footer { padding:28px 24px; } .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } h1 { font-size:28px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>IMDFlex Lo-Fi Prototype 완료 보고서</h1>
+    <p>전체 IA 구현 · 논리적 연결 · UI 전수 검증</p>
+    <div class="status">완료 · 최종 검증 통과</div>
+  </header>
+
+  <section>
+    <h2>결론</h2>
+    <p>IMDFlex 전체 IA의 82개 Screen Family를 93개 상태 화면으로 구현했습니다. 정상 제작 흐름과 생성 취소, 오프라인, 잘못된 Geometry·관계, 재검사, 제출 차단, ZIP 실패·취소, 도면 교체, 복원, 동기화 충돌을 모두 포함합니다.</p>
+    <p><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=51-2">Figma Lo-Fi Prototype 열기</a></p>
+  </section>
+
+  <section>
+    <h2>최종 수치</h2>
+    <div class="metrics">
+      <div class="metric"><strong>82/82</strong><span>Screen Family</span></div>
+      <div class="metric"><strong>93/93</strong><span>상태 화면 검수</span></div>
+      <div class="metric"><strong>284</strong><span>Prototype 연결</span></div>
+      <div class="metric"><strong>0</strong><span>Dead point</span></div>
+      <div class="metric"><strong>0</strong><span>누락 Screen Family</span></div>
+      <div class="metric"><strong>0</strong><span>Placeholder</span></div>
+      <div class="metric"><strong>0</strong><span>화면 경계 이탈</span></div>
+      <div class="metric"><strong>0</strong><span>누락 글꼴</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>성공 조건 판정</h2>
+    <table>
+      <thead><tr><th>성공 조건</th><th>판정</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td>Lo-Fi 완성</td><td class="pass">통과</td><td>Inventory 82개 ID가 Figma에 모두 존재</td></tr>
+        <tr><td>논리 검증·Dead point 0</td><td class="pass">통과</td><td>93개 화면 모두 하나 이상의 이동 경로 보유</td></tr>
+        <tr><td>이상한 UI 100% 검증</td><td class="pass">통과</td><td>기존 54개와 신규 39개를 렌더링해 전수 확인</td></tr>
+      </tbody>
+    </table>
+    <p class="note">여기서 100%는 현재 Lo-Fi 범위의 93개 Figma 상태 화면 전체를 뜻합니다. 실제 앱의 기기별 레이아웃, 접근성, 실제 지도·파일 동작은 구현 단계에서 다시 검증합니다.</p>
+  </section>
+
+  <section>
+    <h2>닫힌 핵심 흐름</h2>
+    <h3>새 프로젝트에서 ZIP까지</h3>
+    <div class="flow">최근 프로젝트 → 시작 방식 → 프로젝트 기본 정보
+→ 주소·Venue·Building·Level → 평면도 등록·정렬
+→ 프로젝트 개요 → 지도 편집 → Feature·관계 작성
+→ 문제 확인·수정·재검사 → Preflight → ZIP 생성
+→ Apple Validator 안내 → 프로젝트 또는 버전 기록</div>
+    <h3>문제 해결 반복</h3>
+    <div class="flow">문제 목록 → 문제 선택 → 지도 위치와 설명 → 수정 시작
+→ Geometry 수정 → 재검사
+├─ 해결됨: 성공 배너 + 남은 문제 목록
+├─ 같은 문제: 기존 위치·설명 화면
+└─ 오류 0: 내보내기 준비</div>
+  </section>
+
+  <section>
+    <h2>논리 검증 규칙</h2>
+    <ul>
+      <li>모든 화면은 이전, 취소, 완료, 다음 행동 중 하나 이상으로 나갈 수 있습니다.</li>
+      <li>오류 화면은 원인, 영향받는 대상, 복구 행동을 제공합니다.</li>
+      <li>데이터 손실 가능성이 있는 취소·삭제·복원은 확인 단계를 거칩니다.</li>
+      <li>Setup을 건너뛰어도 프로젝트 탐색은 가능하고 필요한 종속 작업만 차단합니다.</li>
+      <li>제출 차단형 미완료와 Workflow 경고형 미완료를 구분합니다.</li>
+      <li>앱 내부 검사만으로 Apple IMDF Validator 통과를 보장하지 않습니다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>UI 전수 검수 결과</h2>
+    <ul>
+      <li>버튼, 목록, 검색, Form, 지도, Inspector, 상태 배너가 형태로 구분됩니다.</li>
+      <li>현재 프로젝트·건물·층 맥락과 Primary·Secondary 행동이 구분됩니다.</li>
+      <li>Polygon, Line, Point, Opening, Vertex의 지도 표현을 확인했습니다.</li>
+      <li>선택된 목록·PDF 페이지·Level·Category·Feature의 선택 상태를 보강했습니다.</li>
+      <li>Polygon 경계, Opening 표현, 잘린 Export 버튼과 과도한 제출 보장 문구를 수정했습니다.</li>
+      <li>텍스트 잘림, 화면 경계 이탈, Placeholder, 누락 글꼴은 발견되지 않았습니다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>제품 결정</h2>
+    <p>발견된 논리적 구멍 10개는 모두 D-LF-001~010으로 승인·반영했습니다. Draft Project, Drawing Draft, 제출 차단, Setup Skip, 계층 삭제, ZIP 취소, 도면 교체, 버전 복원, iCloud 충돌, IMDF Import 정책이 포함됩니다.</p>
+  </section>
+
+  <section>
+    <h2>다음 단계</h2>
+    <p>Lo-Fi 단계는 완료입니다. 다음 작업은 대표 과업을 실제 사용자에게 수행시키는 Task-based 사용성 테스트입니다. 테스트에서 발견된 문제는 Screen ID와 Decision ID로 추적해 수정합니다.</p>
+  </section>
+
+  <footer>IMDFlex · Lo-Fi Prototype Final Audit · 2026-08-25</footer>
+</main>
+</body>
+</html>

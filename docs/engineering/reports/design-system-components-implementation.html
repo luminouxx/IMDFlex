@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IMDFlex DesignSystem · Implementation Report</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --accent: #005ea8;
+      --accent-pressed: #004277;
+      --success: #0f7b45;
+      --warning: #a15c00;
+      --danger: #b4232a;
+      --ink: light-dark(#17202a, #f4f7fb);
+      --muted: light-dark(#5c6775, #aab4c2);
+      --surface: light-dark(#ffffff, #161a20);
+      --surface-2: light-dark(#f4f6f8, #222831);
+      --line: light-dark(#d9dee5, #343d49);
+      --page: light-dark(#eef2f6, #0d1117);
+      --shadow: 0 20px 60px rgb(10 30 50 / 12%);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--page);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+    main { width: min(1180px, calc(100% - 40px)); margin: 48px auto 96px; }
+    header, section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    header { padding: 56px; overflow: hidden; position: relative; }
+    header::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      right: -140px;
+      top: -180px;
+      background: color-mix(in srgb, var(--accent) 24%, transparent);
+    }
+    section { padding: 36px; margin-top: 24px; }
+    h1 { max-width: 820px; margin: 14px 0 16px; font-size: clamp(38px, 6vw, 68px); line-height: 1.04; letter-spacing: -0.045em; }
+    h2 { margin: 0 0 22px; font-size: 28px; letter-spacing: -0.025em; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0; }
+    code { padding: 2px 6px; border-radius: 6px; background: var(--surface-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    pre { margin: 16px 0 0; padding: 20px; overflow: auto; border-radius: 16px; background: #0d1723; color: #dbeafe; }
+    pre code { padding: 0; background: transparent; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    th, td { padding: 14px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    a { color: var(--accent); }
+    .eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .lede { max-width: 760px; color: var(--muted); font-size: 19px; }
+    .meta, .grid, .swatches { display: grid; gap: 16px; }
+    .meta { grid-template-columns: repeat(4, 1fr); margin-top: 36px; }
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .swatches { grid-template-columns: repeat(5, 1fr); }
+    .card { padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-2); }
+    .metric { display: block; margin-top: 6px; font-size: 30px; font-weight: 760; letter-spacing: -.04em; }
+    .small { color: var(--muted); font-size: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 32px; gap: 8px; padding: 5px 12px; border-radius: 8px; background: var(--surface-2); font-weight: 650; }
+    .chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .pass { color: var(--success); }
+    .notice { margin-top: 22px; padding: 18px 20px; border-left: 4px solid var(--accent); border-radius: 12px; background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+    .swatch { min-height: 124px; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; border-radius: 16px; color: white; font-weight: 700; }
+    .swatch span { display: block; font-size: 12px; opacity: .84; }
+    .component-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .component { padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; }
+    .component p { color: var(--muted); font-size: 14px; }
+    .footer { margin-top: 24px; color: var(--muted); text-align: center; }
+    @media (max-width: 820px) {
+      main { width: min(100% - 24px, 1180px); margin-top: 16px; }
+      header, section { border-radius: 18px; padding: 26px; }
+      .meta, .grid, .swatches, .component-list { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">IMDFlex · Engineering Report · 2026-09-14</div>
+      <h1>작고 단단한 SwiftUI DesignSystem</h1>
+      <p class="lede">Figma V4의 시각 계약과 Apple HIG를 공용 토큰·컴포넌트로 구현했습니다. 필수값만 받는 생성자, 한 번에 한 속성만 바꾸는 modifier, Environment 기반의 Layout·Motion 정책으로 “big head component”가 자라지 않게 경계를 고정했습니다.</p>
+      <div class="meta">
+        <div class="card"><span class="small">Layout modes</span><span class="metric">3</span><span class="small">Compact · Intermediate · Regular</span></div>
+        <div class="card"><span class="small">Public components</span><span class="metric">10</span><span class="small">+ 4 public style contracts</span></div>
+        <div class="card"><span class="small">Contract tests</span><span class="metric">11</span><span class="small">iPad simulator passed</span></div>
+        <div class="card"><span class="small">Minimum hit area</span><span class="metric">44pt</span><span class="small">Interactive controls</span></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>결과</h2>
+      <div class="grid">
+        <div class="card"><span class="chip pass">Passed</span><h3>DesignSystem</h3><p class="small">컴파일 및 build-for-testing 통과</p></div>
+        <div class="card"><span class="chip pass">Passed</span><h3>Presentation integration</h3><p class="small">변경된 API를 MapEditor에 연결</p></div>
+        <div class="card"><span class="chip pass">Passed</span><h3>App build</h3><p class="small">generic iOS Simulator 전체 빌드 통과</p></div>
+      </div>
+      <div class="notice"><strong>IMDF 영향 없음.</strong> 스키마, GeoJSON, 관계, ZIP export, preflight/validator 동작은 변경하지 않았습니다.</div>
+    </section>
+
+    <section>
+      <h2>색상과 핵심 수치</h2>
+      <p class="small" style="margin-bottom:16px">아래 swatch는 Light 기준입니다. 앱에서는 Dark와 Increase Contrast에 각각 별도 asset value가 적용됩니다.</p>
+      <div class="swatches">
+        <div class="swatch" style="background:#005ea8">Primary<span>#005EA8</span></div>
+        <div class="swatch" style="background:#004277">Pressed<span>#004277</span></div>
+        <div class="swatch" style="background:#0f7b45">Success<span>#0F7B45</span></div>
+        <div class="swatch" style="background:#a15c00">Warning<span>#A15C00</span></div>
+        <div class="swatch" style="background:#b4232a">Danger<span>#B4232A</span></div>
+      </div>
+      <table>
+        <thead><tr><th>Contract</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Control / Field</td><td>minimum 44 pt</td><td>Apple minimum touch target and vertical text centering</td></tr>
+          <tr><td>Status badge</td><td>minimum 32 pt</td><td>Display-only status; icon + text + color</td></tr>
+          <tr><td>Control radius</td><td>12 pt</td><td>Button and Field</td></tr>
+          <tr><td>Badge radius</td><td>8 pt</td><td>Compact status</td></tr>
+          <tr><td>Outer padding</td><td>16 / 24 / 32 pt</td><td>Compact / Intermediate / Regular</td></tr>
+          <tr><td>Inspector width</td><td>— / 320 / 360 pt</td><td>Compact uses a separate presentation</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>공용 API</h2>
+      <div class="component-list">
+        <div class="component"><h3>IMDFButtonStyle</h3><p>primary · secondary · destructive. 44 pt, pressed, disabled, Reduced Motion 처리.</p></div>
+        <div class="component"><h3>IMDFField</h3><p>Label, 44 pt field, focus, supporting text, error, icon, disabled, read-only. Binding과 title만 필수.</p></div>
+        <div class="component"><h3>IMDFStatusBadge</h3><p>32 pt display status. 색상만 쓰지 않고 역할별 SF Symbol과 접근성 value 제공.</p></div>
+        <div class="component"><h3>IMDFToolButton</h3><p>44×44 icon control. 선택과 실행 가능 상태를 서로 다른 의미로 분리.</p></div>
+        <div class="component"><h3>IMDFPanel</h3><p>순수 surface container. floating · inspector · status 스타일은 scoped Environment.</p></div>
+        <div class="component"><h3>Inspector rows</h3><p>32 pt 표시 행과 44 pt action 행을 분리해 터치 영역 의미를 보존.</p></div>
+        <div class="component"><h3>IMDFDisclosureSection</h3><p>native DisclosureGroup을 사용. 언제 펼칠지는 Presentation이 결정.</p></div>
+        <div class="component"><h3>IMDFSelectionButton</h3><p>title/action만 필수. subtitle, icon, selected는 focused modifier.</p></div>
+      </div>
+      <pre><code>Button("Create feature", systemImage: "plus", action: createFeature)
+    .buttonStyle(.imdfPrimary)
+
+IMDFField("Name", text: $name)
+    .placeholder("Feature name")
+    .supportingText("Shown to map users")
+
+IMDFToolButton("Unit", systemImage: "square.split.2x2", action: selectUnit)
+    .selected(selectedFeature == .unit)</code></pre>
+    </section>
+
+    <section>
+      <h2>Big Head 방지 원칙</h2>
+      <table>
+        <thead><tr><th>Concern</th><th>Where it lives</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Required content/action</td><td>Initializer</td><td>없으면 컴포넌트가 성립하지 않는 값만</td></tr>
+          <tr><td>Icon, subtitle, error, selection</td><td>Focused modifier</td><td>한 modifier가 한 관심사만 변경</td></tr>
+          <tr><td>Layout, Motion, Panel surface</td><td>Environment</td><td>하위 트리에 공통인 시각 정책만</td></tr>
+          <tr><td>Validation, loading, selected feature</td><td>Presentation state</td><td>업무 상태를 Environment에 숨기지 않음</td></tr>
+          <tr><td>Presets</td><td>Small semantic enums</td><td>조합형 variant 폭증 금지</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>독립 QA 반영</h2>
+      <table>
+        <thead><tr><th>Finding</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr><td>기존 primary와 radius가 Figma V4와 다름</td><td><code>#005EA8</code>, control 12 pt, badge 8 pt로 분리</td></tr>
+          <tr><td>버튼 높이가 padding 결과에 의존</td><td>모든 interactive primitive가 minimum 44 pt 계약 사용</td></tr>
+          <tr><td>공용 Field 없음</td><td>focus, helper, error, icon을 포함한 <code>IMDFField</code> 추가</td></tr>
+          <tr><td>Badge가 색상에 의존하고 32 pt 미보장</td><td>역할별 symbol + text + color, minimum 32 pt</td></tr>
+          <tr><td>Inspector action이 32 pt</td><td>표시 행과 44 pt action 행 분리</td></tr>
+          <tr><td>“Finish 가능”을 “선택됨”으로 표현</td><td>enabled와 selected 상태 분리</td></tr>
+          <tr><td>Reduced Transparency 미대응</td><td>Material panel이 불투명 system background로 대체</td></tr>
+          <tr><td>다크 모드에서 semantic color 대비 불확실</td><td>Light · Dark · High Contrast asset을 분리하고 WCAG AA 자동 테스트 추가</td></tr>
+          <tr><td>밝은 dark-mode tint를 filled button에 재사용</td><td>text/icon tint와 filled-action background를 분리하고 흰 라벨 대비를 별도 자동 테스트</td></tr>
+          <tr><td>커스텀 컨트롤에 press state 없음</td><td>공용 press feedback 추가; Reduce Motion에서는 scale을 제거</td></tr>
+          <tr><td>Field의 disabled와 read-only 의미가 섞일 위험</td><td>외부 disabled와 <code>.readOnly()</code>를 별도 상태로 구현</td></tr>
+          <tr><td>큰 Dynamic Type에서 한 줄 잘림 위험</td><td>버튼·선택 라벨을 최대 2줄로 확장</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>문서 체계</h2>
+      <p>문서의 중요도와 업무 영역을 동시에 추적할 수 있게 재정리했습니다. 현재 다른 브랜치가 수정 중인 추적 문서는 충돌 방지를 위해 기존 경로를 유지하고 중앙 인덱스에서 분류했습니다.</p>
+      <div class="grid" style="margin-top:16px">
+        <div class="card"><h3>decisions/important</h3><p class="small">제품·아키텍처·스키마·디자인 시스템처럼 되돌리기 어려운 결정</p></div>
+        <div class="card"><h3>decisions/routine</h3><p class="small">세션 로그·구현 순서·되돌릴 수 있는 로컬 선택</p></div>
+        <div class="card"><h3>product · design · engineering · marketing</h3><p class="small">기획, 디자인, 개발, 마케팅 산출물의 업무 영역</p></div>
+      </div>
+      <p style="margin-top:18px"><a href="../../README.md">문서 인덱스 열기</a> · <a href="../../decisions/important/0001-progressive-design-system-api.md">중요 결정 0001</a> · <a href="../../design-system-foundation.md">DesignSystem 계약</a></p>
+    </section>
+
+    <section>
+      <h2>검증 범위</h2>
+      <table>
+        <thead><tr><th>Module / Check</th><th>Status</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td>DesignSystem</td><td class="pass">PASS</td><td>11 XCTest contracts, 0 build warnings — tint/fill contrast, high contrast, layout, motion, radii, hit size</td></tr>
+          <tr><td>Presentation</td><td class="pass">PASS</td><td>IMDFlex full build through MapEditor integration</td></tr>
+          <tr><td>App</td><td class="pass">PASS</td><td>generic iOS Simulator build</td></tr>
+          <tr><td>Domain</td><td>Not run</td><td>No Domain behavior changed</td></tr>
+          <tr><td>Data</td><td>Not run</td><td>No Data behavior changed</td></tr>
+          <tr><td>Apple IMDF Validator</td><td>Not applicable</td><td>No schema/export change</td></tr>
+          <tr><td>Tuist generation</td><td class="pass">PASS</td><td><code>--no-binary-cache --no-open</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>다음 Presentation 단계로 이월</h2>
+      <p>이번 범위는 디자인 시스템과 공용 컴포넌트입니다. 제품 동작을 가장하지 않기 위해 아래 항목은 화면/워크플로 마이그레이션에서 처리하도록 명시적으로 남겼습니다.</p>
+      <table>
+        <thead><tr><th>Item</th><th>Why deferred</th></tr></thead>
+        <tbody>
+          <tr><td>MapEditor의 Finish draft 저장 연결</td><td>완성된 geometry를 어느 repository/coordinator에 전달할지 제품·아키텍처 결정이 필요</td></tr>
+          <tr><td>화면 root의 Layout · Motion mode 적용</td><td>Compact inspector presentation과 Intermediate 지도 재중앙 정책을 함께 설계해야 함</td></tr>
+          <tr><td>Disclosure section의 실제 화면 적용</td><td>라이브러리 예제가 아니라 실제 inspector 정보 우선순위가 먼저 확정되어야 함</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Source control</h2>
+      <table id="source-control-status">
+        <thead><tr><th>Item</th><th>Record</th></tr></thead>
+        <tbody>
+          <tr><td>Issue</td><td><a href="https://github.com/luminouxx/IMDFlex/issues/39">#39 · feat: establish progressive design system components</a></td></tr>
+          <tr><td>Branch</td><td><code>feat/39-progressive-design-system-components</code></td></tr>
+          <tr><td>Foundation</td><td><code>6442df5</code> · DesignSystem tokens, components, assets, and 11 tests</td></tr>
+          <tr><td>Presentation</td><td><code>0affb34</code> · MapEditor shared-component adoption</td></tr>
+          <tr><td>Documentation</td><td>Decision governance, domain indexes, legacy path map, and this HTML report</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="footer">IMDFlex · DesignSystem implementation report · Generated 2026-09-14</p>
+  </main>
+</body>
+</html>

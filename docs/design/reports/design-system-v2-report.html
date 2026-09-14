@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IMDFlex Design System V2 보고서</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      background: Canvas;
+      color: CanvasText;
+    }
+    body { margin: 0; }
+    main { width: min(920px, calc(100% - 40px)); margin: 0 auto; padding: 64px 0 96px; }
+    h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.12; margin: 0 0 16px; }
+    h2 { margin-top: 48px; font-size: 24px; }
+    p, li { max-width: 76ch; }
+    .lead { font-size: 19px; color: color-mix(in srgb, CanvasText 74%, transparent); }
+    .status { display: inline-block; padding: 6px 12px; border-radius: 999px; background: #1473e6; color: white; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 24px; }
+    .card { padding: 20px; border: 1px solid color-mix(in srgb, CanvasText 15%, transparent); border-radius: 16px; }
+    .metric { display: block; font-size: 30px; font-weight: 750; line-height: 1.1; }
+    .label { color: color-mix(in srgb, CanvasText 65%, transparent); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, CanvasText 14%, transparent); text-align: left; vertical-align: top; }
+    th { width: 34%; }
+    a { color: #1473e6; text-underline-offset: 3px; }
+    .note { padding: 18px 20px; border-radius: 14px; background: color-mix(in srgb, #1473e6 10%, Canvas); }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="status">최종 검수 GO</span>
+    <h1>IMDFlex Design System V2</h1>
+    <p class="lead">iPad와 Mac에서 사용하는 IMDF 편집 경험을 위해 Figma 디자인 시스템을 전면 재구축했습니다. Xcode와 제품 코드는 수정하지 않았습니다.</p>
+    <p><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-2">Figma 디자인 시스템 열기</a></p>
+
+    <section>
+      <h2>구축 결과</h2>
+      <div class="grid">
+        <div class="card"><span class="metric">5</span><span class="label">Variable Collections</span></div>
+        <div class="card"><span class="metric">139</span><span class="label">Variables · 누락 0건</span></div>
+        <div class="card"><span class="metric">14</span><span class="label">Text Styles</span></div>
+        <div class="card"><span class="metric">6</span><span class="label">Effect Styles</span></div>
+        <div class="card"><span class="metric">9</span><span class="label">Component Sets</span></div>
+        <div class="card"><span class="metric">102</span><span class="label">Component Variants</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>페이지 구성</h2>
+      <table>
+        <tbody>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-4">Foundations</a></th><td>색상, 타이포그래피, 크기, 레이아웃, 재질, 모션</td></tr>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-5">Apple Reference</a></th><td>iOS/iPadOS 27 라이브 라이브러리 인스턴스</td></tr>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-7">Core Components</a></th><td>Button, Field, Status Badge, Destructive Button</td></tr>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-8">Workspace Components</a></th><td>Workspace Row, Map Tool Button</td></tr>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-9">IMDF Authoring</a></th><td>Geometry Handle, Validation Issue Row, 16개 Feature Type Badge</td></tr>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-11">Product Patterns</a></th><td>Regular, Intermediate, Compact 편집기 패턴</td></tr>
+          <tr><th><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-12">Accessibility QA</a></th><td>대비, Dynamic Type, 포커스 순서, Reduced Motion</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>레퍼런스 반영</h2>
+      <p><a href="https://www.figma.com/design/SEkm8Rrgt5NWrbhd3rq19Z/iOS-and-iPadOS-27--Community-?node-id=507-24672&amp;p=f&amp;t=G5vxsH19ILpv33Z0-0">iOS and iPadOS 27 Community</a> 라이브러리를 연결해 Toolbar, Sidebar, Row, Button, Text Field, Segmented Control을 실제 인스턴스로 사용했습니다.</p>
+      <p>Astryx는 대상 Figma 파일에서 연결 가능한 라이브러리로 노출되지 않아 <a href="https://astryx.atmeta.com/components">컴포넌트 구조</a>와 <a href="https://astryx.atmeta.com/docs/getting-started">시스템 원칙</a>을 분석해 semantic token, 상태 계약, 테마, 문서화 방식에 반영했습니다.</p>
+    </section>
+
+    <section>
+      <h2>Product Patterns 재설계</h2>
+      <p><a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=219-11">V2 · 20 Product Patterns</a>를 지도 중심의 IMDF 저작 도구로 전면 교체했습니다. 실제 도로와 건물 맥락, 층 도면 오버레이, 선택된 Unit의 네 꼭짓점, Opening 위치, 짧은 스냅 가이드를 하나의 편집 상태로 연결했습니다.</p>
+      <table>
+        <tbody>
+          <tr><th>Regular · 1440×960</th><td>플로팅 Sidebar, 세로 Spatial Dock, Toolbar, Inspector를 모두 표시하는 Mac·대형 iPad 작업 공간</td></tr>
+          <tr><th>Intermediate · 1180×820</th><td>탐색 구조를 축약하고 지도 가시 면적을 확보한 중간 폭 편집 공간</td></tr>
+          <tr><th>Compact · 768×1024</th><td>Sidebar를 제거하고 가로 도구 Dock과 바텀 시트 Inspector로 전환한 iPad형 편집 공간</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Select, Point, Unit, Opening, Locate를 서로 다른 공간 편집 아이콘으로 교체</li>
+        <li>중복된 Level 정보 구조를 정리하고 Sidebar를 2단계 이내로 단순화</li>
+        <li>3개의 차단 이슈가 있으면 Export IMDF를 비활성화해 상태 모순 제거</li>
+        <li>선택 상태와 오류의 원인을 지도 형상으로 바로 추적할 수 있도록 연결</li>
+      </ul>
+      <p><a href="https://docs.mapbox.com/console-tools/studio/studio-interface/">Mapbox Studio</a>의 레이어·지도·도구 구조, <a href="https://help.felt.com/getting-started/tour-the-interface">Felt</a>의 선택 기반 상세 패널, <a href="https://doc.arcgis.com/en/arcgis-online/get-started/get-started-with-mv.htm">ArcGIS Map Viewer</a>의 Contents·Settings 분리, Apple의 <a href="https://developer.apple.com/design/human-interface-guidelines/sidebars">Sidebar</a>와 <a href="https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass">Liquid Glass</a> 원칙을 제품 구조에 맞게 조합했습니다.</p>
+    </section>
+
+    <section>
+      <h2>접근성 및 품질 기준</h2>
+      <ul>
+        <li>Accent 대비 최소 6.63:1, Status 대비 최소 4.85:1</li>
+        <li>모든 인터랙티브 터치 영역 최소 44pt</li>
+        <li>Light, Dark, Light High Contrast, Dark High Contrast 지원</li>
+        <li>Default부터 AX5까지 Dynamic Type 검증 표본 제공</li>
+        <li>Standard와 Reduced Motion 모드 지원</li>
+        <li>로딩 상태 전환 시 버튼 크기 변화 없음</li>
+        <li>축소 사이드바에서 행과 액세서리 오버플로 없음</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>검수 결과</h2>
+      <p>iOS 기준, Astryx 시스템 기준, 제품 구조 기준을 맡은 세 검수 에이전트가 수정된 실제 Figma 노드를 다시 측정했고 모두 GO로 판정했습니다.</p>
+      <p>Product Patterns 최종 검사에서 UI 텍스트 스타일 누락 0건, 44pt 미만 액션 영역 0건, 상태 문구 모순 0건, 잔존 레거시 패턴 0건을 확인했습니다.</p>
+      <p class="note">Figma 자동화 환경에서 새 SF Pro 텍스트 렌더링이 제한되어 미리보기에는 Inter를 사용했습니다. 각 스타일에는 Apple semantic typography 역할이 기록되어 있어 추후 SwiftUI에서는 시스템 San Francisco 글꼴로 매핑할 수 있습니다.</p>
+    </section>
+
+    <section>
+      <h2>정리된 이전 자료</h2>
+      <p>기존 Hi-Fi 디자인 시스템 페이지, 레거시 변수 컬렉션, 레거시 텍스트 스타일은 제거했습니다. 작업 흐름 검토에 필요한 초기 Wireflow와 Lo-Fi 화면은 유지했습니다.</p>
+    </section>
+  </main>
+</body>
+</html>

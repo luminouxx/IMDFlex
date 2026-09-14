@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IMDFlex · 디자인 품질 개선 V4</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#1d1d1f;font:16px/1.75 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}main{max-width:1120px;margin:auto;padding:64px 32px 80px}header{margin-bottom:40px}.eyebrow{font-size:13px;font-weight:600;color:#0066cc;letter-spacing:.04em}h1{font-size:38px;line-height:1.3;letter-spacing:-.035em;margin:12px 0 20px}h2{font-size:23px;letter-spacing:-.02em;margin:0 0 16px}h3{font-size:18px;margin:0 0 8px}p{margin:0 0 12px}.muted,figcaption{color:#636366}a{color:#0066cc;text-underline-offset:4px}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.links a{background:#fff;border:1px solid #d1d1d6;border-radius:10px;padding:10px 16px;text-decoration:none}.links a:first-child{background:#0066cc;color:white;border-color:#0066cc}section{background:#fff;border:1px solid #e5e5ea;border-radius:16px;padding:28px;margin-bottom:24px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}.metric{border-top:1px solid #d1d1d6;padding-top:12px}.metric strong{font-size:28px;display:block;line-height:1.3}.metric span{color:#636366;font-size:13px}figure{margin:24px 0 0}figure img{width:100%;display:block;border:1px solid #e5e5ea;border-radius:10px}figcaption{font-size:13px;margin-top:8px}table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}th,td{padding:12px 8px;border-bottom:1px solid #e5e5ea;vertical-align:top}th{color:#636366;font-weight:500}.note{border-left:3px solid #0066cc;padding:12px 16px;background:#f5f5f7;margin-top:20px}.pass{color:#176b3a;font-weight:600}ul{padding-left:22px;margin:12px 0}li{margin:6px 0}.refs{font-size:14px}footer{font-size:13px;color:#636366;margin-top:32px}@media(max-width:700px){main{padding:32px 16px}h1{font-size:29px}section{padding:20px}.metrics{grid-template-columns:repeat(2,1fr)}table{font-size:12px}th,td{padding:8px 4px}}
+  </style>
+</head>
+<body><main>
+  <header>
+    <div class="eyebrow">IMDFLEX · FIGMA QUALITY REVIEW · 2026.09.14</div>
+    <h1>정렬, 반복 구조, 실제 콘텐츠를<br>기준으로 다시 정리했습니다.</h1>
+    <p class="muted">V3 사본만 검사하던 문제를 바로잡고, 사용자가 지적한 원본 <strong>Prototype / 01 HOME-01</strong>과 <strong>Prototype / 05 SETUP-03</strong>에 직접 반영했습니다. Xcode와 제품 코드는 변경하지 않았습니다.</p>
+    <nav class="links">
+      <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=289-2">수정한 HOME 열기</a>
+      <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=289-274">지도 확인 열기</a>
+      <a href="https://www.figma.com/design/kqT9zmJTq9nOoV43y6hYqS?node-id=389-38">디자인 규칙 열기</a>
+    </nav>
+  </header>
+  <section>
+    <h2>확인된 결과</h2>
+    <div class="metrics">
+      <div class="metric"><strong>31</strong><span>원본 흐름의 화면 · 모두 도달 가능</span></div>
+      <div class="metric"><strong>76</strong><span>프로토타입 연결 · 깨진 목적지 0</span></div>
+      <div class="metric"><strong>1,211</strong><span>텍스트 노드 · 미지정 스타일 0</span></div>
+      <div class="metric"><strong>31 / 31</strong><span>Layout · Motion · Light 모드 명시</span></div>
+    </div>
+    <p>원본 HOME 시작점을 추가했습니다. Figma Present에서 <strong>IMDFlex · Original 31 · V4 refinement</strong> 흐름을 선택하면 됩니다.</p>
+    <div class="note">위 수치는 구조 검사 결과입니다. 전체 31개 화면의 시각 품질이나 모든 상호작용의 실제 실행을 통과했다는 뜻은 아닙니다. 독립 100% 캡처 검수는 아래 세 화면의 이번 결함 범위를 대상으로 했습니다.</div>
+  </section>
+  <section>
+    <h2>01 · HOME</h2>
+    <p>추상적인 파랑·보라 썸네일을 장소 사진과 사용자가 제공한 도면으로 교체했습니다. 프로젝트 카드는 동일한 2열 구조, 빠른 시작은 동일한 3열 행으로 구성했습니다.</p>
+    <p>모호한 “Preflight 92%” 대신 검토 항목 수를 보여줍니다. 상태는 버튼으로 취급하지 않으며, 라벨·글줄·아이콘을 Auto Layout 안에서 정렬했습니다.</p>
+    <figure><img src="assets/design-quality-v4/imdflex-v4-home.png" alt="실제 장소 사진과 도면을 사용하는 수정된 최근 프로젝트 화면"><figcaption>원본 289:2 · 독립 회귀 검사: 이번 범위의 카드·텍스트·정렬 문제 없음.</figcaption></figure>
+  </section>
+  <section>
+    <h2>02 · 실제 지도와 위치 확인</h2>
+    <p>격자와 임의 사각형으로 만든 지도를 실제 수원컨벤션센터 Apple Maps 스냅샷으로 교체했습니다. 장소 사진·주소·확인 설명을 별도 패널에 배치하고, 하단 행동을 공통 기준선에 맞췄습니다.</p>
+    <p>주소 검색의 세 아이콘이 같은 위치에 겹쳐 있던 문제도 검색 결과 행 인스턴스로 교체해 해결했습니다. 주소·Venue·건물 화면에도 실제 지도 이미지를 적용했습니다.</p>
+    <figure><img src="assets/design-quality-v4/imdflex-v4-map.png" alt="실제 Apple Maps 지도와 수원컨벤션센터 장소 확인 패널"><figcaption>원본 289:274 · 긴 “주소 다시 검색” 버튼의 너비 부족을 재검수에서 발견해 수정했습니다.</figcaption></figure>
+  </section>
+  <section>
+    <h2>03 · 편집기 회귀 수정</h2>
+    <p>지도 도구 위에 겹쳐 있던 검은 프로토타입 상태 바를 제거하고, 뒤로·프로젝트 범위·검토·다음 행동을 연결된 EditorHeader로 구성했습니다. 9개 편집·리뷰 화면에 적용했습니다.</p>
+    <p>도면은 불투명도만 높여도 곱하기 혼합 때문에 지도 글자가 비쳐 보였습니다. 노드와 이미지의 혼합 방식을 NORMAL로 바꾸고 표시 문구도 100%로 맞췄습니다.</p>
+    <figure><img src="assets/design-quality-v4/imdflex-v4-editor.png" alt="정리된 편집기 상단 도구와 불투명 도면 편집 화면"><figcaption>원본 292:62 · 독립 회귀 검사: 도면 비침 해결, 선택 도형의 네 핸들과 헤더·Inspector 버튼 가림 없음.</figcaption></figure>
+  </section>
+  <section>
+    <h2>디자인 시스템에 추가·반영한 원칙</h2>
+    <table>
+      <thead><tr><th>항목</th><th>제품 규칙</th><th>반영 내용</th></tr></thead>
+      <tbody>
+        <tr><td>레이아웃</td><td>외곽 32 / 24 / 16, 섹션 간 32, 제목–내용 16</td><td>Layout gutter 변수 업데이트, 원본 Setup 공통 시작선·하단 버튼 정렬</td></tr>
+        <tr><td>버튼</td><td>최소 44pt 높이, 17/22 라벨, 좌우 16, 아이콘 간격 8</td><td>Primary·Secondary·Destructive 소스 수정, 긴 라벨 기준 너비</td></tr>
+        <tr><td>상태</td><td>32pt, 14/20 라벨, 작은 indicator, 중성 배경</td><td>원본의 평면 Pill 사각형 0개, Foundations의 잘못된 상태 예시 교체</td></tr>
+        <tr><td>입력</td><td>label24 → gap8 → control44 → gap8 → helper20</td><td>원본 평면 필드 18개를 공통 Field 인스턴스로 교체</td></tr>
+        <tr><td>반복 구조</td><td>컴포넌트 인스턴스 재사용</td><td>WorkflowSidebar 14, WorkflowRow 126, EditorHeader 9, ProjectCard 2, QuickStartRow 3, SearchResultRow 3</td></tr>
+        <tr><td>색상</td><td>#F5F5F7 / #FFFFFF / #1D1D1F / #636366</td><td>차가운 회색을 중성 회색으로 정리, 넓은 상태색 면적 축소</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">반복 구조 수는 원본 31개 화면 안에서 집계한 값입니다. 위 수치는 IMDFlex의 설계 규칙이며 모든 수치를 Apple 공식 규격으로 주장하지 않습니다.</p>
+    <figure><img src="assets/design-quality-v4/imdflex-v4-rules.png" alt="Figma Foundations에 추가한 레이아웃 및 콘텐츠 정렬 규칙"><figcaption>Figma Foundations · V4 / Layout &amp; Content Alignment / Implementation Rules</figcaption></figure>
+  </section>
+  <section>
+    <h2>교차 검수와 남은 제약</h2>
+    <table>
+      <thead><tr><th>검수</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td>HOME · 지도 확인 · 편집기 100% 캡처</td><td class="pass">이번 결함 범위 통과</td></tr>
+        <tr><td>원본 31개 연결 그래프</td><td class="pass">31개 도달 / 76개 연결 / 깨진 목적지 0</td></tr>
+        <tr><td>원본 텍스트 스타일·누락 글꼴</td><td class="pass">스타일 미지정 0 / 누락 글꼴 0</td></tr>
+        <tr><td>전체 31개 개별 화면의 시각 검수</td><td>완료 판정하지 않음</td></tr>
+        <tr><td>모든 반복 요소의 컴포넌트화</td><td>위에 명시한 공통 요소는 적용. 모든 잔여 반복 패턴에 대한 완전성은 미인증</td></tr>
+        <tr><td>Apple 네이티브 라이브러리</td><td>기존 참조 인스턴스에서 SF Pro·기호 글꼴 누락 확인. 현재 결과는 Inter·Noto Sans KR로 검증; 네이티브 글꼴 복원 후 재검증 필요</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>지도는 실제 장소의 <strong>정적 스냅샷</strong>입니다. Figma 안에서 실제 지도 엔진의 검색·확대·회전이 실행되는 것은 아닙니다.</li>
+      <li>Level 05/06 도면은 사용자 제공 샘플입니다. 수원컨벤션센터 도면이라고 확인된 자료가 아니며, 장소와 도면의 지리적 정합도 검증되지 않았습니다.</li>
+      <li>파일 가져오기·검사·내보내기는 프로토타입 상태 흐름입니다. 실제 파일 처리나 Apple 제출 적합성을 검증한 결과가 아닙니다.</li>
+      <li>원본은 Regular·Standard·Light 모드를 명시했습니다. 모드 지정만으로 모든 크기의 반응형·Reduced Motion 동작이 검증되는 것은 아닙니다.</li>
+    </ul>
+  </section>
+  <section class="refs">
+    <h2>레퍼런스에서 가져온 기준</h2>
+    <p><a href="https://dribbble.com/shots/26305682-Register-point-of-sales-and-calendar-ipad-app">POS·Calendar</a>: 반복 카드의 동일한 내부 구조와 제한된 강조색.<br>
+      <a href="https://dribbble.com/shots/23534261-Dark-or-light-mode">Dark or light</a>: 정보 영역의 명확한 분리와 공통 정렬선.<br>
+      <a href="https://dribbble.com/shots/6698744-Reservation-Grid-for-Host-iOS-App">Reservation Grid</a>: 일정한 행 높이와 작업 영역의 질서.<br>
+      <a href="https://dribbble.com/shots/15056888-Smart-Home-iPad-Version">Smart Home</a>: 시스템형 사이드바·검색·선택 행.<br>
+      <a href="https://dribbble.com/shots/20735023-Road-Mapping-Tool-iPad-app-UI">Road Mapping</a>: 중성 UI와 작업 캔버스 중심의 구성. 지리 지도 레퍼런스는 아닙니다.</p>
+    <p>공식 원칙: <a href="https://developer.apple.com/design/human-interface-guidelines/buttons">HIG Buttons</a> · <a href="https://developer.apple.com/design/human-interface-guidelines/layout">Layout</a> · <a href="https://developer.apple.com/design/human-interface-guidelines/color">Color</a> · <a href="https://developer.apple.com/design/human-interface-guidelines/typography">Typography</a></p>
+  </section>
+  <footer>작업: Figma-only · 레퍼런스 리뷰와 독립 회귀 검수 분리 · 사용 스킬: figma-use, figma-generate-library, figma-generate-design.<br>기존 Xcode·제품 코드는 수정하지 않았으며, HTML 보고서와 캡처 파일만 로컬 문서에 추가했습니다.</footer>
+</main></body></html>
