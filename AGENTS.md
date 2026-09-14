@@ -186,6 +186,7 @@ IMDFlex is an Apple IMDF authoring app for iPad and Mac. It should help users cr
 - Binding implementation contracts that every clone needs may remain in `docs/`; do not place session reports or generated visual assets there.
 - Important local decisions live in `LocalWorkspace/decisions/important/`; routine notes live in `LocalWorkspace/decisions/routine/`.
 - Record the typed String Catalog policy in `LocalWorkspace/decisions/important/string-resource-ownership.md` and consult it before adding user-facing copy.
+- For Project Home, consult `LocalWorkspace/decisions/important/project-home-test-first-gate.md`; its test contract must be reviewed before behavior or UI implementation begins.
 
 ## Safety
 
