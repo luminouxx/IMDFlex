@@ -3,5 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.module(
     module: .designSystem,
-    dependencies: []
+    dependencies: [],
+    resources: ["Resources/**"]
 )

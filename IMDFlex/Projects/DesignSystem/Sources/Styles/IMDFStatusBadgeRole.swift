@@ -1,0 +1,38 @@
+import SwiftUI
+
+public enum IMDFStatusBadgeRole: Equatable, Sendable {
+    case info
+    case success
+    case warning
+    case error
+    case selected
+
+    var tint: Color {
+        switch self {
+        case .info, .selected: IMDFColor.accent
+        case .success: IMDFColor.success
+        case .warning: IMDFColor.warning
+        case .error: IMDFColor.danger
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .info: "info.circle.fill"
+        case .success: "checkmark.circle.fill"
+        case .warning: "exclamationmark.triangle.fill"
+        case .error: "xmark.octagon.fill"
+        case .selected: "checkmark.circle.fill"
+        }
+    }
+
+    var accessibilityValue: String {
+        switch self {
+        case .info: "Information"
+        case .success: "Success"
+        case .warning: "Warning"
+        case .error: "Error"
+        case .selected: "Selected"
+        }
+    }
+}
