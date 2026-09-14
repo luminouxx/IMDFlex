@@ -53,17 +53,17 @@ private struct AuthoringFeatureToolbar: View {
     let state: FeatureAuthoringToolState
 
     var body: some View {
-        IMDFPanel(role: .floating) {
+        IMDFPanel {
             ScrollView(.horizontal) {
                 HStack(spacing: IMDFSpacing.sm) {
                     ForEach(IMDFAuthoringFeature.allCases) { feature in
                         IMDFToolButton(
-                            title: feature.title,
-                            systemImage: feature.systemImage,
-                            isSelected: state.selectedFeature == feature
+                            feature.title,
+                            systemImage: feature.systemImage
                         ) {
                             state.selectFeature(feature)
                         }
+                        .selected(state.selectedFeature == feature)
                     }
                 }
             }
@@ -76,32 +76,33 @@ private struct AuthoringInspector: View {
     let state: FeatureAuthoringToolState
 
     var body: some View {
-        IMDFPanel(role: .inspector) {
+        IMDFPanel {
             VStack(alignment: .leading, spacing: IMDFSpacing.lg) {
                 IMDFInspectorSection(title: state.selectedFeature.title) {
                     IMDFInspectorRow(
-                        title: "Geometry",
-                        value: state.contract.geometry.title,
-                        systemImage: state.contract.geometry.systemImage
+                        "Geometry",
+                        value: state.contract.geometry.title
                     )
+                    .systemImage(state.contract.geometry.systemImage)
 
-                    IMDFInspectorRow(title: "Draft points", systemImage: "point.3.connected.trianglepath.dotted") {
+                    IMDFInspectorRow("Draft points") {
                         Text("\(state.draftedPointCount)/\(state.contract.geometry.minimumPointCount)")
                     }
+                    .systemImage("point.3.connected.trianglepath.dotted")
 
-                    IMDFInspectorRow(title: "Status", systemImage: state.canFinish ? "checkmark.circle" : "clock") {
-                        IMDFStatusBadge(
-                            state.canFinish ? "Ready" : "Draft",
-                            systemImage: state.canFinish ? "checkmark.circle" : "clock",
-                            role: state.canFinish ? .success : .warning
-                        )
+                    IMDFInspectorRow("Status") {
+                        IMDFStatusBadge(state.canFinish ? "Ready" : "Draft")
+                            .status(state.canFinish ? .success : .warning)
+                            .statusIcon(state.canFinish ? "checkmark.circle.fill" : "clock.fill")
                     }
+                    .systemImage(state.canFinish ? "checkmark.circle" : "clock")
                 }
 
                 RequirementSection(state: state)
                 DraftControls(state: state)
             }
         }
+        .imdfPanelStyle(.inspector)
     }
 }
 
@@ -111,53 +112,28 @@ private struct RequirementSection: View {
     var body: some View {
         IMDFInspectorSection(title: "Requirements") {
             if state.contract.requiresCategory {
-                Button {
+                IMDFInspectorActionRow("Category") {
                     state.setCategorySelected(!state.hasSelectedCategory)
-                } label: {
-                    requirementRow(
-                        title: "Category",
-                        value: state.hasSelectedCategory ? "Selected" : "Required",
-                        isReady: state.hasSelectedCategory
-                    )
                 }
-                .buttonStyle(.plain)
+                .value(state.hasSelectedCategory ? "Selected" : "Required")
+                .complete(state.hasSelectedCategory)
             }
 
             if state.contract.requiredReferences.isEmpty {
-                requirementRow(title: "References", value: "None", isReady: true)
+                IMDFInspectorRow("References", value: "None")
+                    .systemImage("checkmark.circle.fill")
             } else {
-                Button {
+                IMDFInspectorActionRow("References") {
                     state.satisfyRequiredReferences()
-                } label: {
-                    requirementRow(
-                        title: "References",
-                        value: state.missingReferences.isEmpty ? "Linked" : state.missingReferences.map(\.title).joined(separator: ", "),
-                        isReady: state.missingReferences.isEmpty
-                    )
                 }
-                .buttonStyle(.plain)
+                .value(
+                    state.missingReferences.isEmpty
+                        ? "Linked"
+                        : state.missingReferences.map(\.title).joined(separator: ", ")
+                )
+                .complete(state.missingReferences.isEmpty)
             }
         }
-    }
-
-    private func requirementRow(title: String, value: String, isReady: Bool) -> some View {
-        HStack(spacing: IMDFSpacing.sm) {
-            Image(systemName: isReady ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: IMDFIconSize.sm, weight: .semibold))
-                .foregroundStyle(isReady ? IMDFColor.success : .secondary)
-
-            Text(title)
-                .font(IMDFFont.inspectorLabel)
-                .foregroundStyle(.secondary)
-
-            Spacer(minLength: IMDFSpacing.md)
-
-            Text(value)
-                .font(IMDFFont.inspectorValue)
-                .lineLimit(1)
-        }
-        .frame(minHeight: 32)
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -166,26 +142,25 @@ private struct DraftControls: View {
 
     var body: some View {
         HStack(spacing: IMDFSpacing.sm) {
-            IMDFToolButton(title: "Add point", systemImage: "plus") {
+            IMDFToolButton("Add point", systemImage: "plus") {
                 state.addDraftPoint()
             }
             .disabled(state.contract.geometry == .form)
 
-            IMDFToolButton(title: "Remove point", systemImage: "minus") {
+            IMDFToolButton("Remove point", systemImage: "minus") {
                 state.removeLastDraftPoint()
             }
             .disabled(state.draftedPointCount == 0)
 
-            IMDFToolButton(title: "Cancel draft", systemImage: "xmark") {
+            IMDFToolButton("Cancel draft", systemImage: "xmark") {
                 state.cancel()
             }
 
             IMDFToolButton(
-                title: "Finish draft",
-                systemImage: "checkmark",
-                isSelected: state.canFinish,
-                role: .primary
+                "Finish draft",
+                systemImage: "checkmark"
             ) {}
+            .role(.primary)
             .disabled(!state.canFinish)
         }
     }
