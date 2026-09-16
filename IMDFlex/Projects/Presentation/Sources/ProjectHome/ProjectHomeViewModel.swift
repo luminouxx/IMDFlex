@@ -23,14 +23,17 @@ public final class ProjectHomeViewModel {
     }
 
     public var filteredProjects: [IMDFProject] {
-        let normalizedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !normalizedQuery.isEmpty else {
+        guard isFilteringProjects else {
             return projects
         }
 
         return projects.filter { project in
-            project.name.localizedStandardContains(normalizedQuery)
+            project.name.localizedStandardContains(normalizedSearchQuery)
         }
+    }
+
+    public var isFilteringProjects: Bool {
+        !normalizedSearchQuery.isEmpty
     }
 
     public var canCreateProject: Bool {
@@ -115,6 +118,10 @@ public final class ProjectHomeViewModel {
 
     private var normalizedProjectName: String {
         newProjectName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var normalizedSearchQuery: String {
+        searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private func loadProjects() async {
