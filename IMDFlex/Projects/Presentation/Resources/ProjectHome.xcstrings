@@ -1,0 +1,272 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "projectHome.action.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "취소" } }
+      }
+    },
+    "projectHome.action.delete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete project" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 삭제" } }
+      }
+    },
+    "projectHome.action.newProject" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New project" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "새 프로젝트" } }
+      }
+    },
+    "projectHome.action.open" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open project" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 열기" } }
+      }
+    },
+    "projectHome.action.retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Try again" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "다시 시도" } }
+      }
+    },
+    "projectHome.create.invalidName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enter a project name." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 이름을 입력해 주세요." } }
+      }
+    },
+    "projectHome.create.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project name" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 이름" } }
+      }
+    },
+    "projectHome.create.namePlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "e.g. Suwon Convention Center" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "예: 수원컨벤션센터" } }
+      }
+    },
+    "projectHome.create.nameSupporting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You can rename the project later." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 이름은 나중에 변경할 수 있습니다." } }
+      }
+    },
+    "projectHome.create.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create a project" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 만들기" } }
+      }
+    },
+    "projectHome.delete.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This project will be removed from this device." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 프로젝트가 기기에서 삭제됩니다." } }
+      }
+    },
+    "projectHome.delete.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete this project?" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 프로젝트를 삭제할까요?" } }
+      }
+    },
+    "projectHome.empty.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create a project to start placing your venue on Apple Maps." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트를 만들고 Apple 지도에서 장소 위치를 지정해 보세요." } }
+      }
+    },
+    "projectHome.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No projects yet" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "아직 프로젝트가 없습니다" } }
+      }
+    },
+    "projectHome.error.creation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The project couldn’t be created. Try again." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트를 만들지 못했습니다. 다시 시도해 주세요." } }
+      }
+    },
+    "projectHome.error.deletion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The project couldn’t be deleted. Your work is still available." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트를 삭제하지 못했습니다. 기존 작업은 그대로 보존됩니다." } }
+      }
+    },
+    "projectHome.error.loading.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check the project files on this device, then try again." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 기기의 프로젝트 파일을 확인한 후 다시 시도해 주세요." } }
+      }
+    },
+    "projectHome.error.loading.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects couldn’t be loaded" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트를 불러오지 못했습니다" } }
+      }
+    },
+    "projectHome.hero.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create, validate, and export Apple IMDF projects from one focused workspace." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "하나의 작업공간에서 Apple IMDF 프로젝트를 만들고 검증하고 내보내세요." } }
+      }
+    },
+    "projectHome.hero.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Build indoor maps with confidence." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "신뢰할 수 있는 실내 지도를 만드세요." } }
+      }
+    },
+    "projectHome.navigation.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projects" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트" } }
+      }
+    },
+    "projectHome.project.actions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project actions" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 작업" } }
+      }
+    },
+    "projectHome.project.lastUpdated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Last updated" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "마지막 수정" } }
+      }
+    },
+    "projectHome.recent.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue from your most recently edited work." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "최근에 편집한 프로젝트부터 이어서 작업하세요." } }
+      }
+    },
+    "projectHome.recent.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recent projects" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "최근 프로젝트" } }
+      }
+    },
+    "projectHome.search.prompt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Search projects" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 검색" } }
+      }
+    },
+    "projectHome.workflow.align.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Match each floor plan to the map." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "층별 도면을 지도에 맞춰 정렬합니다." } }
+      }
+    },
+    "projectHome.workflow.align.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Align" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "정렬" } }
+      }
+    },
+    "projectHome.workflow.author.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Draw and describe IMDF features." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "IMDF 객체를 그리고 속성을 입력합니다." } }
+      }
+    },
+    "projectHome.workflow.author.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Author" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "작성" } }
+      }
+    },
+    "projectHome.workflow.locate.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lock the building on Apple Maps." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Apple 지도에서 건물 위치를 고정합니다." } }
+      }
+    },
+    "projectHome.workflow.locate.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Locate" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "위치" } }
+      }
+    },
+    "projectHome.workflow.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Each project follows the same map-first workflow." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "모든 프로젝트는 같은 지도 중심 흐름을 따릅니다." } }
+      }
+    },
+    "projectHome.workflow.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A clear path to IMDF" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "IMDF 완성까지의 흐름" } }
+      }
+    },
+    "projectHome.workflow.validate.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Resolve issues before export." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "내보내기 전에 문제를 해결합니다." } }
+      }
+    },
+    "projectHome.workflow.validate.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Validate" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "검증" } }
+      }
+    },
+    "projectHome.workspace.unavailable.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Return to Projects and reload the project list." } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트 화면으로 돌아가 목록을 다시 불러와 주세요." } }
+      }
+    },
+    "projectHome.workspace.unavailable.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project unavailable" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "프로젝트를 열 수 없습니다" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

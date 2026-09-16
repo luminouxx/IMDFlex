@@ -9,8 +9,8 @@ struct IMDFlexApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ProjectListView(
-                useCase: ProjectUseCase(repository: projectRepository)
+            ProjectHomeView(
+                service: ProjectUseCase(repository: projectRepository)
             )
         }
     }
